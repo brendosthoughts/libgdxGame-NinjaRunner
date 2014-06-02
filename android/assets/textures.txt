@@ -1,0 +1,53 @@
+textures.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+bob-06
+  rotate: false
+  xy: 182, 2
+  size: 24, 28
+  orig: 24, 28
+  offset: 0, 0
+  index: -1
+bob-02
+  rotate: false
+  xy: 78, 2
+  size: 24, 28
+  orig: 24, 28
+  offset: 0, 0
+  index: -1
+bob-04
+  rotate: false
+  xy: 130, 2
+  size: 24, 26
+  orig: 24, 26
+  offset: 0, 0
+  index: -1
+bob-03
+  rotate: false
+  xy: 104, 2
+  size: 24, 26
+  orig: 24, 26
+  offset: 0, 0
+  index: -1
+bob-05
+  rotate: false
+  xy: 156, 2
+  size: 24, 28
+  orig: 24, 28
+  offset: 0, 0
+  index: -1
+block
+  rotate: false
+  xy: 2, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+bob-01
+  rotate: false
+  xy: 52, 2
+  size: 24, 28
+  orig: 24, 28
+  offset: 0, 0
+  index: -1
