@@ -1,6 +1,7 @@
 package wiser.development.starAssault.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.badlogic.gdx.math.Rectangle;
@@ -97,7 +98,7 @@ import com.badlogic.gdx.utils.Array;
 			}
 			return fires;
 		}
-		public List<Skeleton> getDrawableSkeletons( int cameraWidth, int cameraHeight) {
+		public ArrayList<Skeleton> getDrawableSkeletons( int cameraWidth, int cameraHeight) {
 			int x = (int) (bob.getPosition().x - cameraWidth);
 			int y = (int) (bob.getPosition().y - cameraHeight);
 			if (x < 0) {
@@ -116,16 +117,9 @@ import com.badlogic.gdx.utils.Array;
 			}
 			
 			List<Skeleton> skeletons = new ArrayList<Skeleton>();
-			Skeleton skeleton;
-			for (int col = x; col <= x2; col++) {
-				for (int row = y; row <= y2; row++) {
-					skeleton = level.getSkeletons()[col][row];
-					if (skeleton != null) {
-						skeletons.add(skeleton);
-					}
-				}
-			}
-			return skeletons;
+			return level.getSkeletons();
+			
+
 			
 		}
 	 

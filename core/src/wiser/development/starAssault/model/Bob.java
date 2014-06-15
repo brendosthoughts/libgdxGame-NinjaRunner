@@ -77,8 +77,8 @@ public class Bob {
 
 	public void setPosition(Vector2 position) {
 		this.position = position;
-		this.bounds.setX(position.x);
-		this.bounds.setY(position.y);
+//		this.bounds.setX(position.x + SIZE);
+//		this.bounds.setY(position.y + SIZE);
 	}
 
 
@@ -92,11 +92,6 @@ public class Bob {
 	}
 
 
-	public void setBounds(Rectangle bounds) {
-		this.bounds = bounds;
-	}
-
-
 	public void setStateTime(float stateTime) {
 		this.stateTime = stateTime;
 	}
@@ -104,8 +99,8 @@ public class Bob {
 
 	public void update(float delta) {
 //		position.add(velocity.tmp().mul(delta));
-//		bounds.x = position.x;
-//		bounds.y = position.y;
+		bounds.x = position.x;
+		bounds.y = position.y;
 		stateTime += delta;
 	}
 

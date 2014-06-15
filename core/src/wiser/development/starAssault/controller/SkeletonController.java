@@ -1,5 +1,7 @@
 package wiser.development.starAssault.controller;
 
+import java.util.ArrayList;
+
 import wiser.development.starAssault.model.Block;
 import wiser.development.starAssault.model.Bob;
 import wiser.development.starAssault.model.Fire;
@@ -11,16 +13,24 @@ import wiser.development.starAssault.screens.GameScreen.GameState;
 import wiser.development.starAssault.utils.Assets;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 
 public class SkeletonController {
 	
+	private static final float ACCELERATION 	= 5f;
+	private static final float MAX_VEL 	= 0.5f;
+
+
 	
 	private World 	world;
-	private Skeleton[][] skeletons;
+	private ArrayList<Skeleton> skeletons =new ArrayList<Skeleton>();
 	private GameScreen gameScreen;
 	private Bob bob;
+	private Array<Block> collidableBlocks = new Array<Block>();
+
 	
+		
 	public SkeletonController(World world, GameScreen playScreen) {
 		this.world = world;
 		this.skeletons = world.getLevel().getSkeletons();
@@ -35,41 +45,57 @@ public class SkeletonController {
 			return new Rectangle();
 		}
 	};
+
 	
 	public void update(float delta) {
 
-		for (Skeleton[] skeleton_a : skeletons){
-			for (Skeleton skeleton : skeleton_a){
-				
-			
+		for (Skeleton skeleton : skeletons){
+				if(skeleton!=null){
+					moveSkeleton(skeleton); 
+					//skeleton.getAcceleration().y = Assets.GRAVITY;
+					skeleton.getAcceleration().scl(delta); //this should be mul
 
-				// checking collisions with the surrounding blocks depending on skeleton's velocity
-				//checkCollisionWithObjects(delta, skeleton);
-
-
-				// apply damping to halt skeleton nicely 
-				//skeleton.getVelocity().x *= Assets.DAMP;
-
-				// ensure terminal velocity is not exceeded
-				/*if (skeleton.getVelocity().x > Assets.MAX_VEL) {
-					skeleton.getVelocity().x = Assets.MAX_VEL;
+					// apply acceleration to change velocity
+					skeleton.getVelocity().add(skeleton.getAcceleration().x, skeleton.getAcceleration().y);
+					
+					skeleton.getVelocity().x *= Assets.DAMP;
+					// ensure terminal velocity is not exceeded
+					if (skeleton.getVelocity().x > MAX_VEL*delta) {
+						skeleton.getVelocity().x = MAX_VEL*delta;
+					}
+					if (skeleton.getVelocity().x < -MAX_VEL*delta) {
+						skeleton.getVelocity().x = -MAX_VEL*delta;
+					}				
+					// checking collisions with the surrounding blocks depending on skeleton's velocity
+					checkCollisionWithObjects(delta, skeleton);
+	
+					// simply updates the state time
+					skeleton.update(delta);
+					
 				}
-				if (skeleton.getVelocity().x < -Assets.MAX_VEL) {
-					skeleton.getVelocity().x = -Assets.MAX_VEL;
-				}
-*/
-				// simply updates the state time
-				skeleton.update(delta);
 			}
+	}
+	private void moveSkeleton(Skeleton skeleton){
+		/***the skeleton move back and forth from current position  2block in each direction***/
+		
+		if( (skeleton.getPosition().x <= skeleton.getInitialPosition().x - 4) )
+		{
+			// move right
+			skeleton.setFacingLeft(false);
+			skeleton.getAcceleration().x = ACCELERATION;
 			
+		}else if((skeleton.getPosition().x <= skeleton.getInitialPosition().x) ){
+			// move left 
+			skeleton.setFacingLeft(true);
+			skeleton.getAcceleration().x = -ACCELERATION;
 		}
 
-	}
-		
+
+	}	
 	/** Collision checking **/
 	private void checkCollisionWithObjects(float delta, Skeleton skeleton) {
 		// scale velocity to frame units 
-		skeleton.getVelocity().scl(delta);// this should be mul (TSDO fix)
+		skeleton.getVelocity().scl(delta);
 
 		// Obtain the rectangle from the pool instead of instantiating it
 		Rectangle skeletonRect = rectPool.obtain();
@@ -88,8 +114,9 @@ public class SkeletonController {
 			startX = endX = (int) Math.floor(skeleton.getBounds().x + skeleton.getBounds().width + skeleton.getVelocity().x);
 		}
 
-		// get the block(s) skeletoncan collide with
-	//	populateCollidableBlocks(startX, startY, endX, endY);
+		// get the block(s) skeleton can collide with
+	
+		populateCollidableBlocks(startX, startY, endX, endY);
 
 		// simulate skeleton's movement on the X
 		skeletonRect.x += skeleton.getVelocity().x;
@@ -97,15 +124,16 @@ public class SkeletonController {
 		// clear collision boxes in world
 		world.getCollisionRects().clear();
 
-		// if skeletoncollides, make his horizontal velocity 0
-	/*	for (Block block : collidableBlocks) {
-			if (block == null) continue;
+		// if skeleton collides, make his horizontal velocity 0
+		for (Block block : collidableBlocks) {
+			if (block != null){
 			if (skeletonRect.overlaps(block.getBounds())) {
 				skeleton.getVelocity().x = 0;
 				world.getCollisionRects().add(block.getBounds());
 				break;
 			}
-		}*/
+			}
+		}
 
 		// reset the x position of the collision box
 		skeletonRect.x = skeleton.getPosition().x;
@@ -119,44 +147,32 @@ public class SkeletonController {
 			startY = endY = (int) Math.floor(skeleton.getBounds().y + skeleton.getBounds().height + skeleton.getVelocity().y);
 		}
 
-	//	populateCollidableBlocks(startX, startY, endX, endY);
-	//	populateCollidableFires(startX, startY, endX, endY);
+		populateCollidableBlocks(startX, startY, endX, endY);
 		skeletonRect.y += skeleton.getVelocity().y;
-/*
+
 		for (Block block : collidableBlocks) {
 			if (block == null) continue;
 			if (skeletonRect.overlaps(block.getBounds())) {
-				if (skeleton.getVelocity().y < 0) {
-					grounded = true;
-				}
 				skeleton.getVelocity().y = 0;
 				world.getCollisionRects().add(block.getBounds());
 				break;
 			}
 		}
-		for (Fire fire: collidableFires){
-			if (fire == null) continue;
-			if (skeletonRect.overlaps(fire.getBounds())) {
-				gameScreen.setGameState(GameState.GAME_OVER);
-				skeleton.setState(State.DEAD);
-				skeleton.getVelocity().y = 0;
-			}
-		}*/
 		// reset the collision box's position on Y
 		skeletonRect.y = skeleton.getPosition().y;
-
+		
 		// update skeleton's position
 		skeleton.getPosition().add(skeleton.getVelocity());
 		skeleton.getBounds().x = skeleton.getPosition().x;
 		skeleton.getBounds().y = skeleton.getPosition().y;
-
+		
 		// un-scale velocity (not in frame time)
 		skeleton.getVelocity().scl(1/delta);// this should be mul (TODO fix)
 
 	}
 
 
-/*	private void populateCollidableBlocks(int startX, int startY, int endX, int endY) {
+	private void populateCollidableBlocks(int startX, int startY, int endX, int endY) {
 		collidableBlocks.clear();
 		for (int x = startX; x <= endX; x++) {
 			for (int y = startY; y <= endY; y++) {
@@ -166,17 +182,6 @@ public class SkeletonController {
 			}
 		}
 	}
-	private void populateCollidableFires(int startX, int startY, int endX, int endY) {
-		collidableFires.clear();
-		for (int x = startX; x <= endX; x++) {
-			for (int y = startY; y <= endY; y++) {
-				if (x >= 0 && x < world.getLevel().getWidth() && y >=0 && y < world.getLevel().getHeight()) {
-					collidableFires.add(world.getLevel().getCollidableFires(x, y));
-				}
-			}
-		}
-	}*/
-
 
 
 }

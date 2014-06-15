@@ -115,8 +115,8 @@ public class GameScreen implements Screen, InputProcessor {
 				return;
 			}
 		}
-		 controller.update(delta);
 		 skeletonController.update(delta);
+		 controller.update(delta);
 		 renderer.render();
 
 	}

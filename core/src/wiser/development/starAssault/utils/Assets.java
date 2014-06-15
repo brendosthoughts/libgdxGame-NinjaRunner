@@ -16,6 +16,9 @@ public class Assets {
 	private static final float RUNNING_FRAME_DURATION = 0.08f;
 	public static final float DAMP 			= 0.90f;
 	public static final float MAX_VEL 			= 4f;
+	public static final float ACCELERATION 	= 4f;
+	public static final float GRAVITY 			= -20f;
+
 	
 	public static Texture background;
 	public static TextureRegion backgroundRegion;
@@ -150,7 +153,7 @@ public class Assets {
 		for (int i = 0; i < 3; i++) {
 			skeletonLeftFrames[i] = atlas.findRegion("skelton-" + (i+2));
 		}
-		skeletonLeftAnimation = new Animation(RUNNING_FRAME_DURATION, skeletonLeftFrames);
+		skeletonLeftAnimation = new Animation(RUNNING_FRAME_DURATION/3, skeletonLeftFrames);
 		
 		TextureRegion[] skeletonRightFrames = new TextureRegion[3];
 
@@ -158,13 +161,13 @@ public class Assets {
 			skeletonRightFrames[i] = new TextureRegion(skeletonLeftFrames[i]);
 			skeletonRightFrames[i].flip(true, false);
 		}
-		skeletonRightAnimation = new Animation(RUNNING_FRAME_DURATION, skeletonRightFrames);
+		skeletonRightAnimation = new Animation(RUNNING_FRAME_DURATION/3, skeletonRightFrames);
 
 		// Skeleton dieing animations
 		TextureRegion[]skeletonDeadLeftFrames = new TextureRegion[2];
 		skeletonDeadLeftFrames[0] = atlas.findRegion("skelton-die-1" );
 		skeletonDeadLeftFrames[1] = atlas.findRegion("skelton-die-2" );		
-		skeletonDeadLeftAnimation = new Animation(RUNNING_FRAME_DURATION, skeletonDeadLeftFrames);
+		skeletonDeadLeftAnimation = new Animation(RUNNING_FRAME_DURATION/3, skeletonDeadLeftFrames);
 		
 		TextureRegion[] skeletonDeadRightFrames = new TextureRegion[4];
 
@@ -174,7 +177,7 @@ public class Assets {
 		skeletonDeadRightFrames[0].flip(true, false);
 		skeletonDeadRightFrames[1].flip(true, false);
 			
-		skeletonDeadRightAnimation = new Animation(RUNNING_FRAME_DURATION, skeletonRightFrames);
+		skeletonDeadRightAnimation = new Animation(RUNNING_FRAME_DURATION/3, skeletonRightFrames);
 
 	}
 

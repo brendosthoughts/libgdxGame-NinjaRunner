@@ -1,7 +1,10 @@
 package wiser.development.starAssault.model;
 
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
 
 public class Level {
 
@@ -11,6 +14,7 @@ public class Level {
 	private Block[][] blocks;
 	private Fire[][] fires;
 	private Skeleton[][] skeletons;
+	ArrayList<Skeleton> realSkeletons = new ArrayList<Skeleton>();
 
 	public Vector2 getFinish(){
 		return finish;
@@ -37,8 +41,17 @@ public class Level {
 	public Fire[][] getFires(){
 		return fires;
 	}
-	public Skeleton[][] getSkeletons() {
-		return skeletons;
+	public ArrayList<Skeleton> getSkeletons() {
+		int i=0;
+		for (Skeleton[] skeletonA : skeletons){
+			for (Skeleton skeleton : skeletonA){
+				if(skeleton!=null){
+					realSkeletons.add(skeleton);
+					
+				}
+			}
+		}
+		return realSkeletons;
 
 	}
 	public void setBlocks(Block[][] blocks) {
@@ -49,6 +62,9 @@ public class Level {
 	}
 	public Fire getCollidableFires(int x, int y){
 		return fires[x][y];
+	}
+	public Skeleton getCollidableSkeletons(int x, int y) {
+		return skeletons[x][y];
 	}
 
 	
@@ -195,7 +211,7 @@ public class Level {
 		 blocks[10][2] = new Block(new Vector2( 10 ,2 ));
 		blocks[10][3] = new Block(new Vector2( 10, 3));*/
 		 // fire one
-		skeletons[10][1]= new Skeleton(new Vector2(10, 1));
+		skeletons[9][1]= new Skeleton(new Vector2(9, 1));
 		
 		fires[11][1]= new Fire(new Vector2(11,1));
 		//jump one
@@ -268,6 +284,7 @@ public class Level {
 		// TODO Auto-generated method stub
 		
 	}
+
 
 
 }

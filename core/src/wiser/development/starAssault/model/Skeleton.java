@@ -21,15 +21,17 @@ public class Skeleton {
 	float		stateTime = 0;
 	
 	public Skeleton (Vector2 position) {
+		this.initialPosition=position;
 		this.position = position;
 		this.bounds.x = position.x;
 		this.bounds.y = position.y;
-		this.velocity=new Vector2(0,0);
 		this.state= State.WALKING;
 		this.bounds.height = SIZE;
 		this.bounds.width = SIZE;
 	}
-
+	public Vector2 getInitialPosition(){
+		return initialPosition;
+	}
 	public boolean isFacingLeft() {
 		return facingLeft;
 	}
@@ -70,8 +72,8 @@ public class Skeleton {
 
 	public void setPosition(Vector2 position) {
 		this.position = position;
-		this.bounds.setX(position.x);
-		this.bounds.setY(position.y);
+//		this.bounds.setX(position.x);
+//		this.bounds.setY(position.y);
 	}
 
 
@@ -85,20 +87,15 @@ public class Skeleton {
 	}
 
 
-	public void setBounds(Rectangle bounds) {
-		this.bounds = bounds;
-	}
-
-
 	public void setStateTime(float stateTime) {
 		this.stateTime = stateTime;
 	}
 
 
 	public void update(float delta) {
-//		position.add(velocity.tmp().mul(delta));
-//		bounds.x = position.x;
-//		bounds.y = position.y;
+
+		bounds.x = position.x;
+		bounds.y = position.y;
 		stateTime += delta;
 	}
 

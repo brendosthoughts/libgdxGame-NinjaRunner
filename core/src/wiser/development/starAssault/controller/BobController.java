@@ -7,6 +7,7 @@ import wiser.development.starAssault.model.Block;
 import wiser.development.starAssault.model.Bob;
 import wiser.development.starAssault.model.Bob.State;
 import wiser.development.starAssault.model.Fire;
+import wiser.development.starAssault.model.Skeleton;
 import wiser.development.starAssault.model.World;
 import wiser.development.starAssault.screens.GameScreen;
 import wiser.development.starAssault.screens.GameScreen.GameState;
@@ -34,7 +35,8 @@ public class BobController {
 	private boolean jumpingPressed;
 	private boolean punchingPressed;
 	private Array<Block> collidableBlocks = new Array<Block>();
-	private Array<Fire> collidableFires = new Array<Fire>();
+	private Array<Fire> collidableFires = new Array<Fire>(); 
+	private Array<Skeleton> collidableSkeletons = new Array<Skeleton>();
 	public Boolean grounded =false;
 
 	
@@ -162,9 +164,13 @@ public class BobController {
 
 		// get the block(s) bob can collide with
 		populateCollidableBlocks(startX, startY, endX, endY);
+		populateCollidableEnemies(startX, startY, endX, endY);
+		populateCollidableFires(startX, startY, endX, endY);
 
 		// simulate bob's movement on the X
 		bobRect.x += bob.getVelocity().x;
+		
+
 
 		// clear collision boxes in world
 		world.getCollisionRects().clear();
@@ -179,6 +185,20 @@ public class BobController {
 			}
 		}
 
+		for (Skeleton skeleton: collidableSkeletons){
+			if (skeleton == null) continue;
+			if (bobRect.overlaps(skeleton.getBounds()) ) {
+				
+				if(bob.getState().equals(State.PUNCHING)){
+					
+				}else{
+					gameScreen.setGameState(GameState.GAME_OVER);
+					bob.setState(State.DEAD);
+					bob.getVelocity().x = 0;	
+				}			
+			}					
+			
+		}
 		// reset the x position of the collision box
 		bobRect.x = bob.getPosition().x;
 
@@ -190,9 +210,10 @@ public class BobController {
 		} else {
 			startY = endY = (int) Math.floor(bob.getBounds().y + bob.getBounds().height + bob.getVelocity().y);
 		}
-
 		populateCollidableBlocks(startX, startY, endX, endY);
+		populateCollidableEnemies(startX, startY, endX, endY);
 		populateCollidableFires(startX, startY, endX, endY);
+
 		bobRect.y += bob.getVelocity().y;
 
 		for (Block block : collidableBlocks) {
@@ -214,6 +235,21 @@ public class BobController {
 				bob.getVelocity().y = 0;
 			}
 		}
+		
+		for (Skeleton skeleton: collidableSkeletons){
+			if (skeleton == null) continue;
+			if (bobRect.overlaps(skeleton.getBounds()) ) {
+				
+				if(bob.getState().equals(State.PUNCHING)){
+					
+				}else{
+					gameScreen.setGameState(GameState.GAME_OVER);
+					bob.setState(State.DEAD);
+					bob.getVelocity().x = 0;	
+				}			
+			}					
+			
+		}
 		// reset the collision box's position on Y
 		bobRect.y = bob.getPosition().y;
 
@@ -228,6 +264,7 @@ public class BobController {
 	}
 
 
+	
 	private void populateCollidableBlocks(int startX, int startY, int endX, int endY) {
 		collidableBlocks.clear();
 		for (int x = startX; x <= endX; x++) {
@@ -248,6 +285,19 @@ public class BobController {
 			}
 		}
 	}
+	
+	private void populateCollidableEnemies(int startX, int startY, int endX, int endY) {
+		collidableSkeletons.clear();
+		for (int x = startX; x <= endX; x++) {
+			for (int y = startY; y <= endY; y++) {
+				if (x >= 0 && x < world.getLevel().getWidth() && y >=0 && y < world.getLevel().getHeight()) {
+					collidableSkeletons.add(world.getLevel().getCollidableSkeletons(x, y));
+				}
+			}
+		}
+	}
+	
+	
 
 	/** Change Bob's state and parameters based on input controls **/
 	private boolean processInput() {
