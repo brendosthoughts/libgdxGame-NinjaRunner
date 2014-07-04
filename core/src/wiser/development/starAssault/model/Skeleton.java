@@ -6,8 +6,11 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Skeleton {
 	
-	public enum State {
+	public enum SkeletonState {
 		IDLE, WALKING, DEAD
+	}
+	public enum SkeletonType{
+		FORWARD, BACKFORTH, TOUGH
 	}
 	public static final float SIZE = 0.7f; // part of a unit
 
@@ -16,16 +19,20 @@ public class Skeleton {
 	Vector2 	acceleration = new Vector2();
 	Vector2 	velocity = new Vector2();
 	Rectangle 	bounds = new Rectangle();
-	State		state = State.IDLE;
+	SkeletonState		state = SkeletonState.IDLE;
+	SkeletonType type;
+	private int health;
 	boolean		facingLeft = true;
 	float		stateTime = 0;
 	
-	public Skeleton (Vector2 position) {
+	public Skeleton (Vector2 position, SkeletonType skeleton_type ) {
 		this.initialPosition=position;
 		this.position = position;
 		this.bounds.x = position.x;
 		this.bounds.y = position.y;
-		this.state= State.WALKING;
+		this.state= SkeletonState.WALKING;
+		this.type=skeleton_type;
+		this.setHealth(1);
 		this.bounds.height = SIZE;
 		this.bounds.width = SIZE;
 	}
@@ -56,11 +63,11 @@ public class Skeleton {
 		return bounds;
 	}
 
-	public State getState() {
+	public SkeletonState getState() {
 		return state;
 	}
 	
-	public void setState(State newState) {
+	public void setState(SkeletonState newState) {
 		this.state = newState;
 	}
 
@@ -72,8 +79,8 @@ public class Skeleton {
 
 	public void setPosition(Vector2 position) {
 		this.position = position;
-//		this.bounds.setX(position.x);
-//		this.bounds.setY(position.y);
+		this.bounds.setX(position.x+ SIZE);
+		this.bounds.setY(position.y+ SIZE);
 	}
 
 
@@ -98,5 +105,12 @@ public class Skeleton {
 		bounds.y = position.y;
 		stateTime += delta;
 	}
+	public int getHealth() {
+		return health;
+	}
+	public void setHealth(int health) {
+		this.health = health;
+	}
+
 
 }

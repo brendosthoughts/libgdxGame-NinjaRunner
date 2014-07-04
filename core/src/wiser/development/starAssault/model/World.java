@@ -68,6 +68,36 @@ import com.badlogic.gdx.utils.Array;
 			return blocks;
 		}
 	 // --------------------
+		public List<Spring> getDrawableSprings (int cameraWidth, int cameraHeight) {
+			int x = (int) (bob.getPosition().x - cameraWidth);
+			int y = (int) (bob.getPosition().y - cameraHeight);
+			if (x < 0) {
+				x = 0;
+			}
+			if (y < 0) {
+				y = 0;
+			}
+			int x2 = x + 2 * cameraWidth;
+			int y2 = y + 2 * cameraHeight;
+			if (x2 > level.getWidth()) {
+				x2 = level.getWidth() - 1;
+			}
+			if (y2 > level.getHeight()) {
+				y2 = level.getHeight() - 1;
+			}
+			
+			List<Spring> springs = new ArrayList<Spring>();
+			Spring spring;
+			for (int col = x; col <= x2; col++) {
+				for (int row = y; row <= y2; row++) {
+					spring = level.getSprings()[col][row];
+					if (spring != null) {
+						springs.add(spring);
+					}
+				}
+			}
+			return springs;
+		}
 		public List<Fire> getDrawableFire( int cameraWidth, int cameraHeight) {
 			int x = (int) (bob.getPosition().x - cameraWidth);
 			int y = (int) (bob.getPosition().y - cameraHeight);
@@ -99,6 +129,10 @@ import com.badlogic.gdx.utils.Array;
 			return fires;
 		}
 		public ArrayList<Skeleton> getDrawableSkeletons( int cameraWidth, int cameraHeight) {
+			return level.getSkeletons();
+		}
+	 
+		public List<NinjaStars> getDrawableNinjaStars( int cameraWidth, int cameraHeight) {
 			int x = (int) (bob.getPosition().x - cameraWidth);
 			int y = (int) (bob.getPosition().y - cameraHeight);
 			if (x < 0) {
@@ -116,14 +150,30 @@ import com.badlogic.gdx.utils.Array;
 				y2 = level.getHeight() - 1;
 			}
 			
-			List<Skeleton> skeletons = new ArrayList<Skeleton>();
-			return level.getSkeletons();
-			
-
-			
+			List<NinjaStars> NinjaStars = new ArrayList<NinjaStars>();
+			NinjaStars NinjaStar;
+			for (int col = x; col <= x2; col++) {
+				for (int row = y; row <= y2; row++) {
+					NinjaStar = level.getNinjaStar()[col][row];
+					
+					if (NinjaStar != null) {
+						NinjaStars.add(NinjaStar);
+					}
+				}
+			}
+			ArrayList<NinjaStars> thrownStars = new ArrayList<NinjaStars>();
+			thrownStars= level.getThrownStars();
+			Iterator<NinjaStars> starIt =  thrownStars.iterator();
+			while(starIt.hasNext()){
+				NinjaStar=starIt.next();
+//				if(( (float)x <= NinjaStar.getPosition().x)&&( (float)x2 >= NinjaStar.getPosition().x) 
+//					&& ( (float)y <= NinjaStar.getPosition().y)&& ( (float)y2 <= NinjaStar.getPosition().y)) 
+//				{
+				NinjaStars.add(NinjaStar);	
+//				}
+			}
+			return NinjaStars;
 		}
-	 
-
 	 public World(int levelNum) {
 		 createLevel(levelNum);
 	 }

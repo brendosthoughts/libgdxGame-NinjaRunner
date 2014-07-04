@@ -3,9 +3,13 @@ package wiser.development.starAssault.view;
 
 import wiser.development.starAssault.model.Block;
 import wiser.development.starAssault.model.Bob;
-import wiser.development.starAssault.model.Bob.State;
+import wiser.development.starAssault.model.Bob.BobState;
 import wiser.development.starAssault.model.Fire;
+import wiser.development.starAssault.model.NinjaStars;
 import wiser.development.starAssault.model.Skeleton;
+import wiser.development.starAssault.model.Skeleton.SkeletonState;
+import wiser.development.starAssault.model.Spring;
+import wiser.development.starAssault.model.Spring.SpringState;
 import wiser.development.starAssault.model.World;
 import wiser.development.starAssault.utils.Assets;
 
@@ -63,11 +67,7 @@ public class WorldRenderer {
 		this.spriteBatch=batcher;
 		this.world = world;
 		this.cam = cam;
-		
-	//	this.cam.position.set(CAMERA_WIDTH / 2f, CAMERA_HEIGHT / 2f, 0);
 		this.cam.update();
-		//this.debug = debug;
-
 	}
 	
 
@@ -80,6 +80,8 @@ public class WorldRenderer {
 		drawBob();
 		drawFire();
 		drawSkeletons();
+		drawNinjaStars();
+		drawSprings();
 		spriteBatch.end();
 
     	this.cam.position.x = (world.getBob().getPosition().x);
@@ -90,7 +92,16 @@ public class WorldRenderer {
     
   
 	}
-
+	private void drawSprings() {
+		for (Spring spring : world.getDrawableSprings((int)this.cam.viewportWidth , (int)this.cam.viewportHeight)) {
+			if(spring.getState().equals(SpringState.FULL)){ 
+				spriteBatch.draw(Assets.spring, spring.getPosition().x , spring.getPosition().y, Spring.SIZE , Spring.SIZE);
+			}else{
+				spriteBatch.draw(Assets.springDown, spring.getPosition().x , spring.getPosition().y, Spring.SIZE , Spring.SIZE/2);
+			}
+		
+		}
+	}
 	private void drawFire() {
 		for (Fire fire : world.getDrawableFire((int)this.cam.viewportWidth , (int)this.cam.viewportHeight)) {
 			spriteBatch.draw(Assets.fireTexture, fire.getPosition().x , fire.getPosition().y, Fire.SIZE , Fire.SIZE );
@@ -102,15 +113,23 @@ public class WorldRenderer {
 			spriteBatch.draw(Assets.blockTexture, block.getPosition().x , block.getPosition().y, Block.SIZE , Block.SIZE );
 		}
 	}
+	private void drawNinjaStars(){
+		for (NinjaStars ninjaStar : world.getDrawableNinjaStars((int)this.cam.viewportWidth , (int)this.cam.viewportHeight)) {
+			
+			spriteBatch.draw(Assets.ninjaStars, ninjaStar.getPosition().x , ninjaStar.getPosition().y, Block.SIZE , Block.SIZE );
+		}
+		
+	}
+	
 private void drawSkeletons(){
 	for (Skeleton skeleton : world.getDrawableSkeletons((int)this.cam.viewportWidth , (int)this.cam.viewportHeight)) {
-		//if(skeleton.getState().equals(State.WALKING)){
+		if(skeleton.getState().equals(SkeletonState.WALKING)){
 			skeletonFrame= skeleton.isFacingLeft() ? Assets.skeletonLeftAnimation.getKeyFrame(skeleton.getStateTime(), true) : Assets.skeletonRightAnimation.getKeyFrame(skeleton.getStateTime(), true);
 			spriteBatch.draw(skeletonFrame, skeleton.getPosition().x, skeleton.getPosition().y , skeleton.SIZE , skeleton.SIZE);
-//		}else if(skeleton.getState().equals(State.DEAD)){
-//			skeletonFrame= skeleton.isFacingLeft() ? Assets.skeletonDeadLeftAnimation.getKeyFrame(skeleton.getStateTime(), true) : Assets.skeletonDeadRightAnimation.getKeyFrame(skeleton.getStateTime(), true);
-//			spriteBatch.draw(skeletonFrame, skeleton.getPosition().x, skeleton.getPosition().y , skeleton.SIZE , skeleton.SIZE);
-//		}
+		}else if(skeleton.getState().equals(SkeletonState.DEAD)){
+			skeletonFrame= skeleton.isFacingLeft() ? Assets.skeletonDeadLeftAnimation.getKeyFrame(skeleton.getStateTime(), false) : Assets.skeletonDeadRightAnimation.getKeyFrame(skeleton.getStateTime(), true);
+			spriteBatch.draw(skeletonFrame, skeleton.getPosition().x, skeleton.getPosition().y , skeleton.SIZE , skeleton.SIZE);
+		}
 
 
 	}
@@ -121,20 +140,20 @@ private void drawSkeletons(){
 		Bob bob = world.getBob();
 		bobFrame = bob.isFacingLeft() ? Assets.bobIdleLeft : Assets.bobIdleRight;
 		
-		if(bob.getState().equals(State.PUNCHING)){
+		if(bob.getState().equals(BobState.PUNCHING)){
 			bobFrame = bob.isFacingLeft() ? Assets.punchLeftAnimation.getKeyFrame(bob.getStateTime(), true) : Assets.punchRightAnimation.getKeyFrame(bob.getStateTime(), true);
 		}
-		else if(bob.getState().equals(State.WALKING)) {
+		else if(bob.getState().equals(BobState.WALKING)) {
 			bobFrame = bob.isFacingLeft() ? Assets.walkLeftAnimation.getKeyFrame(bob.getStateTime(), true) : Assets.walkRightAnimation.getKeyFrame(bob.getStateTime(), true);
 		} 
-		else if (bob.getState().equals(State.JUMPING)) {
+		else if (bob.getState().equals(BobState.JUMPING)) {
 			if (bob.getVelocity().y > 0) {
 				bobFrame = bob.isFacingLeft() ? Assets.bobJumpLeft : Assets.bobJumpRight;
 			} else {
 				bobFrame = bob.isFacingLeft() ? Assets.bobFallLeft : Assets.bobFallRight;
 			}
 				
-		}else if(bob.getState().equals(State.DEAD)){
+		}else if(bob.getState().equals(BobState.DEAD)){
 			bobFrame=Assets.bobDead;	
 
 		}

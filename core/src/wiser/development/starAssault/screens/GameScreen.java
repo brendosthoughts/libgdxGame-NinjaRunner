@@ -38,7 +38,9 @@ public class GameScreen implements Screen, InputProcessor {
 	Rectangle pauseBounds;
 	Rectangle resumeBounds;
 	Rectangle quitBounds;
+	Rectangle ninjaInfo;
 	Vector3 touchPoint;
+	String numThrowingStars;
 	public GameScreen(Game game, int levelNum){
 		touchPoint = new Vector3();
 		this.game =game;
@@ -51,6 +53,7 @@ public class GameScreen implements Screen, InputProcessor {
 		pauseBounds = new Rectangle(  cam.position.x + CAMERA_WIDTH/2 -1f, cam.position.y +CAMERA_HEIGHT/2 -1f, 1f,1f);
 		resumeBounds = new Rectangle(CAMERA_WIDTH, CAMERA_HEIGHT, CAMERA_WIDTH, CAMERA_HEIGHT );
 		quitBounds = new Rectangle(6f, 4f,4f, 1f);
+		ninjaInfo = new Rectangle(  cam.position.x - CAMERA_WIDTH/2 +1f, cam.position.y +CAMERA_HEIGHT/2 -1f, 1f,1f);
 		
 		world = new World(levelNum);
 		renderer = new WorldRenderer(world, false, this.cam, batcher);
@@ -164,8 +167,11 @@ public class GameScreen implements Screen, InputProcessor {
 	private void presentRunning() {
 		
 		batcher.draw(Assets.pause,  cam.position.x + CAMERA_WIDTH/2 -1f, cam.position.y +CAMERA_HEIGHT/2 -1f, 1f,1f);
-		
-		
+		batcher.draw(Assets.ninjaStars,  cam.position.x - CAMERA_WIDTH/2 +0.5f, cam.position.y +CAMERA_HEIGHT/2 -0.5f, 0.5f,0.5f);
+		numThrowingStars = ""+controller.getBob().getThrowingStars();
+		Assets.font.setColor(0f, 0f, 0f, 1f);
+		Assets.font.setScale(0.04f);
+		Assets.font.draw(batcher,numThrowingStars , cam.position.x - CAMERA_WIDTH/2 + 0.5f, cam.position.y +CAMERA_HEIGHT/2 -0.5f);
 	}
 
 	private void presentPaused() {
@@ -230,6 +236,8 @@ public boolean keyDown(int keycode) {
 		controller.rightPressed();
 	if (keycode == Keys.Z)
 		controller.jumpPressed();
+	if (keycode == Keys.C)
+		controller.throwPressed();
 	if (keycode == Keys.X)
 		controller.punchPressed();
 	return true;
@@ -245,6 +253,8 @@ public boolean keyUp(int keycode) {
 		controller.jumpReleased();
 	if (keycode == Keys.X)
 		controller.punchReleased();
+	if (keycode == Keys.C)
+		controller.throwReleased();
 	if (keycode == Keys.D)
 		renderer.setDebug(!renderer.isDebug());
 	return true;

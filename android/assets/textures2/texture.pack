@@ -4,7 +4,7 @@ filter: Linear,Linear
 repeat: none
 ghost-2
   rotate: false
-  xy: 171, 2
+  xy: 189, 2
   size: 87, 127
   orig: 87, 127
   offset: 0, 0
@@ -18,7 +18,7 @@ ghost-die
   index: -1
 fire
   rotate: false
-  xy: 52, 2
+  xy: 70, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -39,7 +39,7 @@ ninja-punch-1
   index: -1
 skelton-3
   rotate: false
-  xy: 331, 228
+  xy: 412, 228
   size: 30, 65
   orig: 30, 65
   offset: 0, 0
@@ -53,7 +53,7 @@ ninja-4
   index: -1
 ninja-up
   rotate: false
-  xy: 205, 228
+  xy: 234, 228
   size: 56, 77
   orig: 56, 77
   offset: 0, 0
@@ -74,21 +74,21 @@ ninja-8
   index: -1
 ghost-1
   rotate: false
-  xy: 86, 2
+  xy: 104, 2
   size: 83, 130
   orig: 83, 130
   offset: 0, 0
   index: -1
 ninja-up-down
   rotate: false
-  xy: 156, 228
+  xy: 185, 228
   size: 47, 74
   orig: 47, 74
   offset: 0, 0
   index: -1
 skelton-4
   rotate: false
-  xy: 363, 228
+  xy: 444, 228
   size: 34, 67
   orig: 34, 67
   offset: 0, 0
@@ -109,16 +109,23 @@ ninja-1
   index: -1
 skelton-die-1
   rotate: false
-  xy: 399, 228
+  xy: 2, 307
   size: 35, 61
   orig: 35, 61
   offset: 0, 0
   index: -1
 ghost-4
   rotate: false
-  xy: 352, 2
+  xy: 370, 2
   size: 85, 128
   orig: 85, 128
+  offset: 0, 0
+  index: -1
+fire-ball
+  rotate: false
+  xy: 52, 2
+  size: 16, 31
+  orig: 16, 31
   offset: 0, 0
   index: -1
 ninja-2
@@ -130,14 +137,14 @@ ninja-2
   index: -1
 skelton-1
   rotate: false
-  xy: 263, 228
+  xy: 344, 228
   size: 31, 67
   orig: 31, 67
   offset: 0, 0
   index: -1
 skelton-die-2
   rotate: false
-  xy: 436, 228
+  xy: 39, 307
   size: 36, 39
   orig: 36, 39
   offset: 0, 0
@@ -149,11 +156,32 @@ ninja-6
   orig: 40, 75
   offset: 0, 0
   index: -1
+spring-full
+  rotate: false
+  xy: 107, 307
+  size: 25, 36
+  orig: 25, 36
+  offset: 0, 0
+  index: -1
 ghost-3
   rotate: false
-  xy: 260, 2
+  xy: 278, 2
   size: 90, 129
   orig: 90, 129
+  offset: 0, 0
+  index: -1
+npokrjbh
+  rotate: false
+  xy: 292, 228
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+spring-compressed
+  rotate: false
+  xy: 77, 307
+  size: 28, 24
+  orig: 28, 24
   offset: 0, 0
   index: -1
 ninja-punch-2
@@ -161,6 +189,13 @@ ninja-punch-2
   xy: 104, 228
   size: 50, 68
   orig: 50, 68
+  offset: 0, 0
+  index: -1
+ninja-star
+  rotate: false
+  xy: 156, 228
+  size: 27, 27
+  orig: 27, 27
   offset: 0, 0
   index: -1
 ninja-3
@@ -172,7 +207,7 @@ ninja-3
   index: -1
 skelton-2
   rotate: false
-  xy: 296, 228
+  xy: 377, 228
   size: 33, 65
   orig: 33, 65
   offset: 0, 0
