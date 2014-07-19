@@ -18,6 +18,7 @@ public class Level {
 	private Spring[][] springs;
 	private Skeleton[][] skeletons;
 	private NinjaStars[][] ninja_stars;
+	private FireBall[][] fire_balls;
 	ArrayList<Skeleton> realSkeletons = new ArrayList<Skeleton>();
 	ArrayList<NinjaStars> thrownStars = new ArrayList<NinjaStars>();
 
@@ -46,6 +47,9 @@ public class Level {
 	public Fire[][] getFires(){
 		return fires;
 	}
+	public FireBall[][] getFireBalls(){
+		return fire_balls;
+	}
 	public Spring[][] getSprings() {
 		// TODO Auto-generated method stub
 		return springs;
@@ -69,6 +73,9 @@ public class Level {
 	public Fire getCollidableFires(int x, int y){
 		return fires[x][y];
 	}
+	public FireBall getCollidableFireBalls(int x, int y){
+		return fire_balls[x][y];
+	}
 	public NinjaStars getCollidableStars(int x, int y) {
 		return ninja_stars[x][y];
 	}
@@ -79,7 +86,13 @@ public class Level {
 		return springs[x][y];
 	}
 	
-	
+	public void addThrowingStar(Vector2 initialPosition, Vector2 velocity){
+		thrownStars.add(new NinjaStars(new Vector2(initialPosition.x, initialPosition.y), velocity) );		
+	}
+	public void destroyThrowingStar(int index){
+		thrownStars.remove(index);
+	}
+
 
 	
 	public Level(int level_num) {
@@ -119,6 +132,7 @@ public class Level {
 		fires = new Fire[width][height];
 		skeletons =new Skeleton[width][height];
 		ninja_stars =new NinjaStars[width][height];
+		springs = new Spring[width][height];
 		//draw all as empty block to start 
 		for (int col = 0; col < width; col++) {
 			for (int row = 0; row < height; row++) {
@@ -131,9 +145,7 @@ public class Level {
 
 		for (int col = 0; col < width; col++) {
 			blocks[col][0] = new Block(new Vector2(col, 0));
-			/*if ((col > 4)&& ((col!=9) || (col!=15) || (col!=16 )|| (col!=19 )|| (col!=23 )|| (col!=26 )|| (col!=27 )|| (col!=29 )|| (col!= 30) )){
-				blocks[col][2] = new Block(new Vector2(col, 2));
-			}*/
+
 		}
 //make step set starting at block 8 
 		 blocks[8][1] = new Block(new Vector2(8 ,1 ));
@@ -198,6 +210,7 @@ public class Level {
 	}
 	
 	private void level_two() {
+		// all firballs in this level only move vertically
 		width = 85;
 		height = 30;
 		blocks = new Block[width][height];
@@ -205,6 +218,7 @@ public class Level {
 		skeletons= new Skeleton[width][height];
 		ninja_stars =new NinjaStars[width][height];
 		springs= new Spring[width][height];
+		fire_balls = new FireBall[width][height];
 		
 		//draw all as empty block to start 
 		for (int col = 0; col < width; col++) {
@@ -214,6 +228,7 @@ public class Level {
 				skeletons[col][row]=null;
 				ninja_stars[col][row]=null;
 				springs[col][row]=null;
+				fire_balls[col][row]=null;
 			}
 		}
 
@@ -225,11 +240,14 @@ public class Level {
 		}
 
 		 // fire one
-		skeletons[9][1]= new Skeleton(new Vector2(9, 1), SkeletonType.FORWARD);
-		realSkeletons.add(skeletons[9][1]);
+		skeletons[8][1]= new Skeleton(new Vector2(8, 1), SkeletonType.BACKFORTH);
+		realSkeletons.add(skeletons[8][1]);
 		
+		
+		skeletons[10][1]= new Skeleton(new Vector2(10, 1), SkeletonType.BACKFORTH);
+		realSkeletons.add(skeletons[10][1]);
 		ninja_stars[7][2]=new NinjaStars(new Vector2(7, 2), new Vector2(0,0));
-		
+		springs[1][1] = new Spring(new Vector2(1,1));		
 		springs[10][1] = new Spring(new Vector2(10,1));
 		fires[11][1]= new Fire(new Vector2(11,1));
 		//jump one
@@ -239,7 +257,7 @@ public class Level {
 		
 		//fire 2
 		fires[13][1]= new Fire(new Vector2(13,1));
-		
+		 fire_balls[1][1] = new FireBall(new Vector2(1,1), new Vector2(0, 1));
 		//jump2
 		
 		 blocks[14][1] = new Block(new Vector2( 14, 1));
@@ -295,6 +313,7 @@ public class Level {
 		 blocks[44][15] = new Block(new Vector2( 44, 15));
 		 blocks[45][15] = new Block(new Vector2( 45, 15));
 		 blocks[46][15] = new Block(new Vector2( 46, 15));
+			springs[45][1] = new Spring(new Vector2(45,1));
 		 blocks[47][15] = new Block(new Vector2(47 , 15));
 		 blocks[48][15] = new Block(new Vector2( 48, 15));
 		 blocks[49][15] = new Block(new Vector2( 49, 15));
@@ -304,11 +323,9 @@ public class Level {
 		 blocks[53][15] = new Block(new Vector2( 53,15 ));
 		 blocks[54][15] = new Block(new Vector2( 54, 15));
 		 
-		 skeletons[52][16]= new Skeleton(new Vector2(52, 16), SkeletonType.FORWARD);
-		 realSkeletons.add(skeletons[52][16]);
-		 
-		 
-		 
+		 skeletons[52][17]= new Skeleton(new Vector2(52, 17), SkeletonType.LEFT);
+		 realSkeletons.add(skeletons[52][17]);
+
 		 finish= new Vector2(53, 15);
 		
 	}
@@ -331,12 +348,6 @@ public class Level {
 		
 	}
 
-	public void addThrowingStar(Vector2 initialPosition, Vector2 velocity){
-		thrownStars.add(new NinjaStars(new Vector2(initialPosition.x, initialPosition.y), velocity) );		
-	}
-	public void destroyThrowingStar(int index){
-		thrownStars.remove(index);
-	}
 
 
 

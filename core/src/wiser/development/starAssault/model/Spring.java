@@ -16,9 +16,9 @@ public class Spring {
 	  SpringState state;
 	 public Spring(Vector2 pos) {
 	  this.position = pos;
-	  this.state = SpringState.COMPRESSED;
-	  this.bounds.setX(pos.x*SIZE);
-	  this.bounds.setY(pos.y*SIZE);
+	  this.state = SpringState.FULL;
+	  this.bounds.setX(pos.x);
+	  this.bounds.setY(pos.y);
 	  this.bounds.width = SIZE;
 	  this.bounds.height = SIZE;
 	 }
@@ -26,8 +26,7 @@ public class Spring {
 		 return bounds;
 	 }
 	 public Vector2 getPosition(){
-		 return position;
-		 
+		 return position; 
 	 }
 
 	 public void setState(SpringState newState){

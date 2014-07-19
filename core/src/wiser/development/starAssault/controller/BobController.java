@@ -9,6 +9,7 @@ import wiser.development.starAssault.model.Block;
 import wiser.development.starAssault.model.Bob;
 import wiser.development.starAssault.model.Bob.BobState;
 import wiser.development.starAssault.model.Fire;
+import wiser.development.starAssault.model.FireBall;
 import wiser.development.starAssault.model.NinjaStars;
 import wiser.development.starAssault.model.Skeleton;
 import wiser.development.starAssault.model.Skeleton.SkeletonState;
@@ -43,10 +44,11 @@ public class BobController {
 	private boolean punchingPressed;
 	private Array<Block> collidableBlocks = new Array<Block>();
 	private Array<Fire> collidableFires = new Array<Fire>(); 
+	private Array<FireBall> collidableFireBalls = new Array<FireBall>(); 
 	private Array<Spring> collidableSprings = new Array<Spring>(); 
 	private ArrayList<Skeleton> collidableSkeletons = new ArrayList<Skeleton>();
-	private ArrayList<NinjaStars> thrownStars= new ArrayList<NinjaStars>();
 	private Array<NinjaStars> collidableStars = new Array<NinjaStars>();
+	
 	public Boolean grounded =false;
 
 	
@@ -126,21 +128,22 @@ public class BobController {
 		if (grounded && bob.getState().equals(BobState.JUMPING)) {
 			bob.setState(BobState.IDLE);
 		}
-		
+
 		// Setting initial vertical acceleration 
 		bob.getAcceleration().y = GRAVITY;
 		
 		// Convert acceleration to frame time
 		bob.getAcceleration().scl(delta); //this should be mul
 		
+		
+		checkCollisionWithObjects(delta);
+		
 		// apply acceleration to change velocity
 		bob.getVelocity().add(bob.getAcceleration().x, bob.getAcceleration().y);
 
 		// checking collisions with the surrounding blocks depending on Bob's velocity
-		checkCollisionWithObjects(delta);
-		//checkThrownStars();
-		
-			
+
+
 
 		// apply damping to halt Bob nicely 
 		bob.getVelocity().x *= DAMP;
@@ -214,6 +217,23 @@ public class BobController {
 				}
 			}
 		}
+
+		for (Fire fire: collidableFires){
+			if (fire == null) continue;
+			if (bob.getBounds().overlaps(fire.getBounds())) {
+				gameScreen.setGameState(GameState.GAME_OVER);
+				bob.setState(BobState.DEAD);
+				bob.getVelocity().y = 0;
+			}
+		}
+		for (FireBall fireBall: collidableFireBalls){
+			if (fireBall == null) continue;
+			if (bob.getBounds().overlaps(fireBall.getBounds())) {
+				gameScreen.setGameState(GameState.GAME_OVER);
+				bob.setState(BobState.DEAD);
+				bob.getVelocity().y = 0;
+			}
+		}
 		// while loop searches for collisions with skeletons (skeleton controller kills bob non vice versa)
 		Iterator<Skeleton> xIt =  collidableSkeletons.iterator();
 		while(xIt.hasNext())
@@ -235,37 +255,7 @@ public class BobController {
 		}
 		
 		// check collision of ninjaStar's (thrownstars) bob has thrown
-		int index=0;
-		thrownStars=world.getLevel().getThrownStars();
-		Iterator<NinjaStars> starIt =  thrownStars.iterator();
-		while(starIt.hasNext()){
-			NinjaStars star= starIt.next();
-			
-			star.getVelocity().scl(delta);
-			star.setPosition(star.getPosition().add(star.getVelocity()));
-			
-			Iterator<Skeleton> skel =  collidableSkeletons.iterator();
-			while(skel.hasNext())
-			{
-				
-			    Skeleton skeleton = skel.next();
-			    if (star.getBounds().overlaps(skeleton.getBounds()) ) {
-			    		skeleton.setState(SkeletonState.DEAD);	
-						world.getLevel().destroyThrowingStar(index);
-			    		
-			    }							
-			}
-			for (Block block : collidableBlocks) {
-				if (block == null) continue;
-				if (star.getBounds().overlaps(block.getBounds())) {
-					world.getLevel().destroyThrowingStar(index);
-				}
-			}
-			star.getVelocity().scl(1/delta);
-			index++;
-		}	
-		
-		
+	
 		// reset the x position of the collision box
 		bobRect.x = bob.getPosition().x;
 
@@ -292,6 +282,14 @@ public class BobController {
 				break;
 			}
 		}
+		for (FireBall fireBall: collidableFireBalls){
+			if (fireBall == null) continue;
+			if (bob.getBounds().overlaps(fireBall.getBounds())) {
+				gameScreen.setGameState(GameState.GAME_OVER);
+				bob.setState(BobState.DEAD);
+				bob.getVelocity().y = 0;
+			}
+		}
 		for(NinjaStars ninja_star: collidableStars ){
 			if(ninja_star != null){
 				if(bobRect.overlaps(ninja_star.getBounds())){
@@ -308,7 +306,16 @@ public class BobController {
 				bob.getVelocity().y = 0;
 			}
 		}
-		
+		if(bob.getState().equals(BobState.JUMPING)){
+			for (Spring spring: collidableSprings){
+				if (spring == null) continue;
+				if (bob.getBounds().overlaps(spring.getBounds())) {
+					
+					bob.getVelocity().y = 0.3f;
+				//	grounded= false;
+				}
+			}
+		}
 		Iterator<Skeleton> yIt =  collidableSkeletons.iterator();
 		while(yIt.hasNext())
 		{
@@ -320,14 +327,7 @@ public class BobController {
 		    }					
 		}
 	//	if(bob.getState().equals(BobState.JUMPING)){
-			for (Spring spring: collidableSprings){
-				if (spring == null) continue;
-				if (bob.getBounds().overlaps(spring.getBounds())) {
-					gameScreen.setGameState(GameState.GAME_OVER);
-					bob.setState(BobState.DEAD);
-					bob.getVelocity().y = 0;
-				}
-			}
+
 			//TODO test against springs if bob in air and over spring comppress spring shoot bob , uncompress spring
 		//}
 		// reset the collision box's position on Y
@@ -350,6 +350,7 @@ public class BobController {
 		collidableFires.clear();
 		collidableStars.clear();
 		collidableSprings.clear();
+		collidableFireBalls.clear();
 		//collidableSkeletons.clear();
 		for (int x = startX; x <= endX; x++) {
 			for (int y = startY; y <= endY; y++) {
@@ -358,6 +359,8 @@ public class BobController {
 					collidableFires.add(world.getLevel().getCollidableFires(x, y));
 					collidableStars.add(world.getLevel().getCollidableStars(x, y));
 					collidableSprings.add(world.getLevel().getCollidableSprings(x, y));
+					collidableFireBalls.add(world.getLevel().getCollidableFireBalls(x, y));
+					
 				}
 			}
 		}

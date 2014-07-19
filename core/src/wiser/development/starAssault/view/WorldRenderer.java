@@ -5,12 +5,16 @@ import wiser.development.starAssault.model.Block;
 import wiser.development.starAssault.model.Bob;
 import wiser.development.starAssault.model.Bob.BobState;
 import wiser.development.starAssault.model.Fire;
+import wiser.development.starAssault.model.FireBall;
+import wiser.development.starAssault.model.FireBall.FireBallState;
 import wiser.development.starAssault.model.NinjaStars;
 import wiser.development.starAssault.model.Skeleton;
 import wiser.development.starAssault.model.Skeleton.SkeletonState;
 import wiser.development.starAssault.model.Spring;
 import wiser.development.starAssault.model.Spring.SpringState;
 import wiser.development.starAssault.model.World;
+import wiser.development.starAssault.screens.GameScreen;
+import wiser.development.starAssault.screens.GameScreen.GameState;
 import wiser.development.starAssault.utils.Assets;
 
 import com.badlogic.gdx.Gdx;
@@ -43,12 +47,14 @@ public class WorldRenderer {
 
 	private SpriteBatch spriteBatch;
 	private boolean debug = false;
+	private GameScreen game;
 	private int width;
 	private int height;
 	private float ppuX;	// pixels per unit on the X axis
 	private float ppuY;	// pixels per unit on the Y axis
 
 	private TextureRegion skeletonFrame;
+	private TextureRegion ninjaStarFrame;
 	
 	public void setSize (int w, int h) {
 		this.width = w;
@@ -63,10 +69,11 @@ public class WorldRenderer {
 		this.debug = debug;
 	}
 
-	public WorldRenderer(World world, boolean debug, OrthographicCamera cam, SpriteBatch batcher) {
+	public WorldRenderer(World world, boolean debug, GameScreen playScreen, SpriteBatch batcher) {
 		this.spriteBatch=batcher;
 		this.world = world;
-		this.cam = cam;
+		game=playScreen;
+		this.cam = playScreen.cam;
 		this.cam.update();
 	}
 	
@@ -82,6 +89,8 @@ public class WorldRenderer {
 		drawSkeletons();
 		drawNinjaStars();
 		drawSprings();
+		drawFireBall();
+		drawRandomAssets(); // things like pause button, level progress and similar
 		spriteBatch.end();
 
     	this.cam.position.x = (world.getBob().getPosition().x);
@@ -91,6 +100,16 @@ public class WorldRenderer {
     	
     
   
+	}
+	private void drawRandomAssets(){
+		if(game.gameState.equals(GameState.RUNNING)){
+			//spriteBatch.draw(Assets.pause, this.cam.position.x + this.cam.viewportWidth/2 - 1f , this.cam.position.y + this.cam.viewportHeight/2 - 1f , 1f , 1f);
+			///nput proccessing is done by the input processor nolonger in gamescreen
+		}else if (game.gameState.equals(GameState.PAUSED)){
+			
+		}
+		
+		
 	}
 	private void drawSprings() {
 		for (Spring spring : world.getDrawableSprings((int)this.cam.viewportWidth , (int)this.cam.viewportHeight)) {
@@ -107,6 +126,15 @@ public class WorldRenderer {
 			spriteBatch.draw(Assets.fireTexture, fire.getPosition().x , fire.getPosition().y, Fire.SIZE , Fire.SIZE );
 		}
 	}
+	private void drawFireBall() {
+		for (FireBall fireBall : world.getDrawableFireBall((int)this.cam.viewportWidth , (int)this.cam.viewportHeight)) {
+			if(fireBall.getState().equals(FireBallState.UP)){
+				spriteBatch.draw(Assets.fireBallUpTexture, fireBall.getPosition().x , fireBall.getPosition().y, FireBall.SIZE , FireBall.SIZE );
+			}else if(fireBall.getState().equals(FireBallState.DOWN)){
+				spriteBatch.draw(Assets.fireBallDownTexture, fireBall.getPosition().x , fireBall.getPosition().y, FireBall.SIZE , FireBall.SIZE );
+			}
+		}
+	}
 
 	private void drawBlocks() {
 		for (Block block : world.getDrawableBlocks((int)this.cam.viewportWidth , (int)this.cam.viewportHeight)) {
@@ -115,8 +143,12 @@ public class WorldRenderer {
 	}
 	private void drawNinjaStars(){
 		for (NinjaStars ninjaStar : world.getDrawableNinjaStars((int)this.cam.viewportWidth , (int)this.cam.viewportHeight)) {
-			
-			spriteBatch.draw(Assets.ninjaStars, ninjaStar.getPosition().x , ninjaStar.getPosition().y, Block.SIZE , Block.SIZE );
+			if(ninjaStar.getVelocity().x == 0){
+				spriteBatch.draw(Assets.ninjaStars, ninjaStar.getPosition().x , ninjaStar.getPosition().y, Block.SIZE , Block.SIZE );
+			}else{
+				ninjaStarFrame=Assets.throwingStarAnimation.getKeyFrame(ninjaStar.getStateTime(), true);
+				spriteBatch.draw(ninjaStarFrame, ninjaStar.getPosition().x , ninjaStar.getPosition().y + 0.3f, ninjaStar.SIZE/2 , ninjaStar.SIZE/2 );
+			}
 		}
 		
 	}

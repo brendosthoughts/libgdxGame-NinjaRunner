@@ -10,23 +10,24 @@ public class Skeleton {
 		IDLE, WALKING, DEAD
 	}
 	public enum SkeletonType{
-		FORWARD, BACKFORTH, TOUGH
+		LEFT, RIGHT, BACKFORTH, TOUGH_LEFT, TOUGH_RIGHT, TOUGH_BACKFORTH
 	}
 	public static final float SIZE = 0.7f; // part of a unit
 
 	Vector2 	position = new Vector2();
-	Vector2 	initialPosition = new Vector2();
 	Vector2 	acceleration = new Vector2();
-	Vector2 	velocity = new Vector2();
+	Vector2 	velocity = new Vector2(-5, 0);
 	Rectangle 	bounds = new Rectangle();
 	SkeletonState		state = SkeletonState.IDLE;
 	SkeletonType type;
 	private int health;
 	boolean		facingLeft = true;
 	float		stateTime = 0;
+	float initpos_x, initpos_y;
 	
 	public Skeleton (Vector2 position, SkeletonType skeleton_type ) {
-		this.initialPosition=position;
+		this.initpos_x=position.x;
+		this.initpos_y=position.y;
 		this.position = position;
 		this.bounds.x = position.x;
 		this.bounds.y = position.y;
@@ -37,14 +38,16 @@ public class Skeleton {
 		this.bounds.width = SIZE;
 	}
 	public Vector2 getInitialPosition(){
-		return initialPosition;
+		return new Vector2(initpos_x, initpos_y);
 	}
 	public boolean isFacingLeft() {
 		return facingLeft;
 	}
-
-	public void setFacingLeft(boolean facingLeft) {
-		this.facingLeft = facingLeft;
+	public SkeletonType getSkeletonType(){
+		return this.type;
+	}
+	public void setFacingLeft(boolean newDir) {
+		this.facingLeft = newDir;
 	}
 
 	public Vector2 getPosition() {
@@ -79,8 +82,8 @@ public class Skeleton {
 
 	public void setPosition(Vector2 position) {
 		this.position = position;
-		this.bounds.setX(position.x+ SIZE);
-		this.bounds.setY(position.y+ SIZE);
+		this.bounds.setX(position.x);
+		this.bounds.setY(position.y);
 	}
 
 

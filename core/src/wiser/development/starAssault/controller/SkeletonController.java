@@ -10,19 +10,21 @@ import wiser.development.starAssault.model.Fire;
 import wiser.development.starAssault.model.NinjaStars;
 import wiser.development.starAssault.model.Skeleton;
 import wiser.development.starAssault.model.Skeleton.SkeletonState;
+import wiser.development.starAssault.model.Skeleton.SkeletonType;
 import wiser.development.starAssault.model.World;
 import wiser.development.starAssault.screens.GameScreen;
 import wiser.development.starAssault.screens.GameScreen.GameState;
 import wiser.development.starAssault.utils.Assets;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 
 public class SkeletonController {
 	
-	private static final float ACCELERATION 	= 5f;
-	private static final float MAX_VEL 	= 4f;
+	private static final float ACCELERATION 	= 3f;
+	private static final float MAX_VEL 	= 2f;
 
 
 	
@@ -51,55 +53,89 @@ public class SkeletonController {
 
 	
 	public void update(float delta) {
+		skeletons = world.getLevel().getSkeletons();
 		Iterator<Skeleton> it =  skeletons.iterator();
 		while(it.hasNext())
 		{
 		    Skeleton skeleton = it.next();
-		    moveSkeleton(skeleton); 
-			skeleton.getAcceleration().y = Assets.GRAVITY;
-			skeleton.getAcceleration().scl(delta); //this should be mul
-
-			// apply acceleration to change velocity
-			skeleton.getVelocity().add(skeleton.getAcceleration().x, skeleton.getAcceleration().y);
+			if(skeleton.getState().equals(SkeletonState.DEAD)){
+				skeleton.getVelocity().x=0;
+				skeleton.getAcceleration().x = 0;
+			}else{
+		    
+				skeleton.getVelocity().scl(delta);
 			
-			skeleton.getVelocity().x *= Assets.DAMP;
-			// ensure terminal velocity is not exceeded
-			if (skeleton.getVelocity().x > MAX_VEL) {
-				skeleton.getVelocity().x = MAX_VEL;
+		    
+				skeleton.getAcceleration().y = Assets.GRAVITY;
+				moveSkeleton(skeleton, delta);
+				// apply acceleration to change velocity
+				skeleton.getVelocity().add(skeleton.getAcceleration().x, skeleton.getAcceleration().y);
+				skeleton.getVelocity().x *= Assets.DAMP;
+				// ensure terminal velocity is not exceeded
+				if (skeleton.getVelocity().x > MAX_VEL) {
+					skeleton.getVelocity().x = MAX_VEL;
+				}
+				if (skeleton.getVelocity().x < -MAX_VEL) {
+					skeleton.getVelocity().x = -MAX_VEL;
+				}				
+				// checking collisions with the surrounding blocks depending on skeleton's velocity
+				checkCollisionWithObjects(delta, skeleton);
+			
+				// simply updates the state time
+				skeleton.update(delta);
 			}
-			if (skeleton.getVelocity().x < -MAX_VEL) {
-				skeleton.getVelocity().x = -MAX_VEL;
-			}				
-			// checking collisions with the surrounding blocks depending on skeleton's velocity
-			checkCollisionWithObjects(delta, skeleton);
 
-			// simply updates the state time
-			skeleton.update(delta);
+			skeleton.getVelocity().scl(1/delta);
 		}
+			
 		
 	}
-	private void moveSkeleton(Skeleton skeleton){
+	private void moveSkeleton(Skeleton skeleton, float delta){
+		SkeletonType type= skeleton.getSkeletonType();
+
+		switch (type){
+		case BACKFORTH:
 		/***the skeleton move back and forth from current position  2block in each direction***/
-		if(skeleton.getState().equals(SkeletonState.DEAD)){
-			skeleton.getAcceleration().x = 0;
-			skeleton.getVelocity().x=0;
-			skeleton.getVelocity().y=0;
-			
-		}
-		else if( (skeleton.getPosition().x <(skeleton.getInitialPosition().x -2f) ) ){
-			// move right
-			skeleton.setFacingLeft(false);
-			skeleton.getVelocity().x=0;
-			skeleton.getAcceleration().x = ACCELERATION;
-			
-		}
-		else if((skeleton.getPosition().x <= skeleton.getInitialPosition().x) ){
-				// move left 
+			if(( skeleton.getPosition().x <= skeleton.getInitialPosition().x +2f)
+				&& (skeleton.getPosition().x > skeleton.getInitialPosition().x -2f )
+				&& (skeleton.isFacingLeft()))
+			{
 				skeleton.setFacingLeft(true);
 				skeleton.getVelocity().x=0;
 				skeleton.getAcceleration().x = -ACCELERATION;
-		} 
+			}else if( skeleton.getPosition().x > skeleton.getInitialPosition().x +2f)
+			{
+				skeleton.setFacingLeft(true);
+				skeleton.getVelocity().x=0;
+				skeleton.getAcceleration().x = -ACCELERATION;
 
+			}else if(( skeleton.getPosition().x <= skeleton.getInitialPosition().x +2f)
+				&& ( skeleton.getPosition().x > skeleton.getInitialPosition().x -2f )
+				&& !(skeleton.isFacingLeft()))
+			{			
+				skeleton.setFacingLeft(false);
+				skeleton.getVelocity().x=0;
+				skeleton.getAcceleration().x = ACCELERATION;
+			}else if (skeleton.getPosition().x < skeleton.getInitialPosition().x -2f){
+				skeleton.setFacingLeft(false);
+				skeleton.getVelocity().x=0;
+				skeleton.getAcceleration().x = ACCELERATION;					
+			}
+		
+			break;
+		case LEFT: 
+			skeleton.setFacingLeft(true);
+			skeleton.getVelocity().x=0;
+			skeleton.getAcceleration().x = -ACCELERATION;
+			break;	
+		case RIGHT: 
+			skeleton.setFacingLeft(false);
+			skeleton.getVelocity().x=0;
+			skeleton.getAcceleration().x = ACCELERATION;
+			break;
+		default: 
+		}	
+		
 
 	}	
 	/** Collision checking **/
@@ -137,17 +173,33 @@ public class SkeletonController {
 				bob.getVelocity().x = 0;		
 	    	}
 		}
+		
 		thrownStars=world.getLevel().getThrownStars();
 		Iterator<NinjaStars> starIt =  thrownStars.iterator();
-		/*while(starIt.hasNext())
-		{
-		    NinjaStars star = starIt.next();
-		    if (star.getBounds().overlaps(skeleton.getBounds())){
-		    	skeleton.setState(SkeletonState.DEAD);
-		    }
-
+		int index=0;
+		while(starIt.hasNext()){
+			NinjaStars star= starIt.next();
+			
+			star.getVelocity().scl(delta);
+			star.setPosition(star.getPosition().add(star.getVelocity()));
+			
+		
+			    if (star.getBounds().overlaps(skeleton.getBounds()) ) {
+			    		skeleton.setState(SkeletonState.DEAD);	
+			    		skeleton.setVelocity(new Vector2(0,0));
+			    		star.setPosition(new Vector2( 2,2));
+						world.getLevel().destroyThrowingStar(index);
+			    		
+			    }	
+			star.getVelocity().scl(1/delta);
 		}
-		*/
+//			for (Block block : collidableBlocks) {
+//				if (block == null) continue;
+//				if (star.getBounds().overlaps(block.getBounds())) {
+//					world.getLevel().destroyThrowingStar(index);
+//				}
+//			}
+
 		populateCollidableBlocks(startX, startY, endX, endY);
 
 		// simulate skeleton's movement on the X

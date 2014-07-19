@@ -1,5 +1,6 @@
 package wiser.development.starAssault.screens;
 import wiser.development.starAssault.controller.BobController;
+import wiser.development.starAssault.controller.ObjectController;
 import wiser.development.starAssault.controller.SkeletonController;
 import wiser.development.starAssault.model.World;
 import wiser.development.starAssault.utils.Assets;
@@ -27,11 +28,12 @@ public class GameScreen implements Screen, InputProcessor {
 	public static final float CAMERA_HEIGHT = 7f;
 	
 	Game game;
-	private OrthographicCamera cam;
+	public OrthographicCamera cam;
 	private World world;
 	private WorldRenderer renderer;
 	private BobController	controller;
 	private SkeletonController skeletonController;
+	private ObjectController objectController;
 	private int width, height;
 	SpriteBatch batcher;
 	public GameState gameState;
@@ -50,15 +52,16 @@ public class GameScreen implements Screen, InputProcessor {
 		this.cam.update();
 		
 		batcher = new SpriteBatch();
-		pauseBounds = new Rectangle(  cam.position.x + CAMERA_WIDTH/2 -1f, cam.position.y +CAMERA_HEIGHT/2 -1f, 1f,1f);
+		pauseBounds = new Rectangle(   CAMERA_WIDTH/2 -1f,CAMERA_HEIGHT/2  -1f, 2f, 2f);
 		resumeBounds = new Rectangle(CAMERA_WIDTH, CAMERA_HEIGHT, CAMERA_WIDTH, CAMERA_HEIGHT );
 		quitBounds = new Rectangle(6f, 4f,4f, 1f);
 		ninjaInfo = new Rectangle(  cam.position.x - CAMERA_WIDTH/2 +1f, cam.position.y +CAMERA_HEIGHT/2 -1f, 1f,1f);
 		
 		world = new World(levelNum);
-		renderer = new WorldRenderer(world, false, this.cam, batcher);
+		renderer = new WorldRenderer(world, false, this, batcher);
         controller = new BobController(world, this);
         skeletonController = new SkeletonController(world, this);
+        objectController = new ObjectController(world, this);
         Gdx.input.setInputProcessor(this);
 	}
  
@@ -85,9 +88,12 @@ public class GameScreen implements Screen, InputProcessor {
 			updateGameOver();
 			break;
 		}
+		this.cam.update();
 	}
 	
 	private void updatePaused() {
+		Gdx.gl.glClearColor(0.7f, 0.1f, 0.1f, 1);
+		 Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		if (Gdx.input.justTouched()) {
 			cam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
 
@@ -99,7 +105,9 @@ public class GameScreen implements Screen, InputProcessor {
 
 			if (quitBounds.contains(touchPoint.x, touchPoint.y)) {
 				Assets.playSound(Assets.clickSound);
+				gameState = GameState.GAME_OVER;
 				game.setScreen(new MainMenuScreen(game));
+				
 				return;
 			}
 		}
@@ -118,8 +126,14 @@ public class GameScreen implements Screen, InputProcessor {
 				return;
 			}
 		}
+		// update rectangle bounds for pause button and pause menu 
+		//pauseBounds.set(  this.cam.position.x + CAMERA_WIDTH/2 , this.cam.position.y +CAMERA_HEIGHT/2  , 2f, 2f);
+		//pauseBounds.setPosition(cam.position.x + CAMERA_WIDTH/2 , cam.position.y +CAMERA_HEIGHT/2);
+		
+		 objectController.update(delta);
 		 skeletonController.update(delta);
 		 controller.update(delta);
+		 
 		 renderer.render();
 
 	}
@@ -173,9 +187,8 @@ public class GameScreen implements Screen, InputProcessor {
 		Assets.font.setScale(0.04f);
 		Assets.font.draw(batcher,numThrowingStars , cam.position.x - CAMERA_WIDTH/2 + 0.5f, cam.position.y +CAMERA_HEIGHT/2 -0.5f);
 	}
-
 	private void presentPaused() {
-		batcher.draw(Assets.pauseMenu, cam.position.x -CAMERA_WIDTH/2, cam.position.y -CAMERA_HEIGHT/2,CAMERA_WIDTH, CAMERA_HEIGHT);
+	//	batcher.draw(Assets.pauseMenu, cam.position.x -CAMERA_WIDTH/2, cam.position.y -CAMERA_HEIGHT/2,CAMERA_WIDTH, CAMERA_HEIGHT);
 
 		
 	}

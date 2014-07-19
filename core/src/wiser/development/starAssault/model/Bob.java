@@ -10,15 +10,13 @@ public class Bob {
 	public enum BobState {
 		IDLE, WALKING, JUMPING, PUNCHING, DEAD, THROW
 	}
-	public static final float SIZE = 0.7f; // part of a unit
+	public static final float SIZE = 0.8f; // part of a unit
 
 	Vector2 	position = new Vector2();
 	Vector2 	acceleration = new Vector2();
 	Vector2 	velocity = new Vector2();
 	Rectangle 	bounds = new Rectangle();
 	BobState		state = BobState.IDLE;
-	float old_delta=10;
-	private Level level;
 	boolean		facingLeft = false;
 	float		stateTime = 0;
 	boolean		longJump = false , canThrow= true;

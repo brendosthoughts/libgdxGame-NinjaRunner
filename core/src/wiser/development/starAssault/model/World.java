@@ -128,6 +128,36 @@ import com.badlogic.gdx.utils.Array;
 			}
 			return fires;
 		}
+		public List<FireBall> getDrawableFireBall( int cameraWidth, int cameraHeight) {
+			int x = (int) (bob.getPosition().x - cameraWidth);
+			int y = (int) (bob.getPosition().y - cameraHeight);
+			if (x < 0) {
+				x = 0;
+			}
+			if (y < 0) {
+				y = 0;
+			}
+			int x2 = x + 2 * cameraWidth;
+			int y2 = y + 2 * cameraHeight;
+			if (x2 > level.getWidth()) {
+				x2 = level.getWidth() - 1;
+			}
+			if (y2 > level.getHeight()) {
+				y2 = level.getHeight() - 1;
+			}
+			
+			List<FireBall> fireBalls = new ArrayList<FireBall>();
+			FireBall fireBall;
+			for (int col = x; col <= x2; col++) {
+				for (int row = y; row <= y2; row++) {
+					fireBall = level.getFireBalls()[col][row];
+					if (fireBall != null) {
+						fireBalls.add(fireBall);
+					}
+				}
+			}
+			return fireBalls;
+		}
 		public ArrayList<Skeleton> getDrawableSkeletons( int cameraWidth, int cameraHeight) {
 			return level.getSkeletons();
 		}

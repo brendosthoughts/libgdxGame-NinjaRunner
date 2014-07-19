@@ -40,6 +40,8 @@ public class Assets {
 	public static TextureRegion bobIdleRight;
 	public static TextureRegion blockTexture;
 	public static TextureRegion fireTexture;
+	public static TextureRegion fireBallUpTexture;
+	public static TextureRegion fireBallDownTexture;
 	public static TextureRegion bobFrame;
 	public static TextureRegion bobJumpLeft;
 	public static TextureRegion bobFallLeft;
@@ -60,6 +62,7 @@ public class Assets {
 	public static Animation throwingStarAnimation;
 	public static Animation skeletonDeadLeftAnimation;
 	public static Animation skeletonDeadRightAnimation;
+	public static Animation throwingNinjaStar;
 	public static BitmapFont font;
 
 	public static Music music;
@@ -109,11 +112,13 @@ public class Assets {
 		bobIdleRight.flip(true, false);
 		blockTexture = atlas.findRegion("block");
 		fireTexture = atlas.findRegion("fire");
-		
+		fireBallDownTexture = atlas.findRegion("fire-ball");	
+		fireBallUpTexture = new TextureRegion(fireBallDownTexture);	
+		fireBallUpTexture.flip(true, true);
 		TextureRegion[] throwingStarFrames = new TextureRegion[2];
 		throwingStarFrames[0]=atlas.findRegion("ninja-star");
-		throwingStarFrames[1]= new TextureRegion( throwingStarFrames[0]);
-		throwingStarFrames[1].flip(false, true);
+		throwingStarFrames[1]= atlas.findRegion("ninja-star-rotate");
+		
 		
 		throwingStarAnimation = new Animation( RUNNING_FRAME_DURATION ,throwingStarFrames);
 		
@@ -164,7 +169,7 @@ public class Assets {
 		for (int i = 0; i < 3; i++) {
 			skeletonLeftFrames[i] = atlas.findRegion("skelton-" + (i+2));
 		}
-		skeletonLeftAnimation = new Animation(RUNNING_FRAME_DURATION*3, skeletonLeftFrames);
+		skeletonLeftAnimation = new Animation(RUNNING_FRAME_DURATION*2, skeletonLeftFrames);
 		
 		TextureRegion[] skeletonRightFrames = new TextureRegion[3];
 
@@ -172,7 +177,7 @@ public class Assets {
 			skeletonRightFrames[i] = new TextureRegion(skeletonLeftFrames[i]);
 			skeletonRightFrames[i].flip(true, false);
 		}
-		skeletonRightAnimation = new Animation(RUNNING_FRAME_DURATION*3, skeletonRightFrames);
+		skeletonRightAnimation = new Animation(RUNNING_FRAME_DURATION*2, skeletonRightFrames);
 
 		// Skeleton dieing animations
 		TextureRegion[]skeletonDeadLeftFrames = new TextureRegion[2];
@@ -180,15 +185,15 @@ public class Assets {
 		skeletonDeadLeftFrames[1] = atlas.findRegion("skelton-die-2" );		
 		skeletonDeadLeftAnimation = new Animation(RUNNING_FRAME_DURATION*3, skeletonDeadLeftFrames);
 		
-		TextureRegion[] skeletonDeadRightFrames = new TextureRegion[4];
+		TextureRegion[] skeletonDeadRightFrames = new TextureRegion[2];
 
 		skeletonDeadRightFrames[0] = new TextureRegion(skeletonDeadLeftFrames[0]);
-		skeletonDeadRightFrames[1] = new TextureRegion(skeletonDeadLeftFrames[1]);
+		skeletonDeadRightFrames[1] = new TextureRegion(skeletonDeadLeftFrames[1]);		
 		
 		skeletonDeadRightFrames[0].flip(true, false);
 		skeletonDeadRightFrames[1].flip(true, false);
 			
-		skeletonDeadRightAnimation = new Animation(RUNNING_FRAME_DURATION*3, skeletonRightFrames);
+		skeletonDeadRightAnimation = new Animation(RUNNING_FRAME_DURATION*3, skeletonDeadRightFrames);
 
 	}
 
