@@ -24,7 +24,7 @@ import com.badlogic.gdx.utils.Pool;
 public class SkeletonController {
 	
 	private static final float ACCELERATION 	= 3f;
-	private static final float MAX_VEL 	= 2f;
+	private static final float MAX_VEL 	= 1f;
 
 
 	
@@ -66,7 +66,7 @@ public class SkeletonController {
 				skeleton.getVelocity().scl(delta);
 			
 		    
-				skeleton.getAcceleration().y = Assets.GRAVITY;
+				//skeleton.getAcceleration().y = Assets.GRAVITY;
 				moveSkeleton(skeleton, delta);
 				// apply acceleration to change velocity
 				skeleton.getVelocity().add(skeleton.getAcceleration().x, skeleton.getAcceleration().y);
@@ -174,25 +174,25 @@ public class SkeletonController {
 	    	}
 		}
 		
-		thrownStars=world.getLevel().getThrownStars();
-		Iterator<NinjaStars> starIt =  thrownStars.iterator();
-		int index=0;
-		while(starIt.hasNext()){
-			NinjaStars star= starIt.next();
-			
-			star.getVelocity().scl(delta);
-			star.setPosition(star.getPosition().add(star.getVelocity()));
-			
-		
-			    if (star.getBounds().overlaps(skeleton.getBounds()) ) {
-			    		skeleton.setState(SkeletonState.DEAD);	
-			    		skeleton.setVelocity(new Vector2(0,0));
-			    		star.setPosition(new Vector2( 2,2));
-						world.getLevel().destroyThrowingStar(index);
-			    		
-			    }	
-			star.getVelocity().scl(1/delta);
-		}
+//		thrownStars=world.getLevel().getThrownStars();
+//		Iterator<NinjaStars> starIt =  thrownStars.iterator();
+//		int index=0;
+//		while(starIt.hasNext()){
+//			NinjaStars star= starIt.next();
+//			
+//			star.getVelocity().scl(delta);
+//		//	star.setPosition(star.getPosition().add(star.getVelocity()));
+//			
+//		
+//			    if (star.getBounds().overlaps(skeleton.getBounds()) ) {
+//			    		skeleton.setState(SkeletonState.DEAD);	
+//			    		skeleton.setVelocity(new Vector2(0,0));
+//			    		star.setPosition(new Vector2( 2,2));
+//						world.getLevel().destroyThrowingStar(index);
+//			    		
+//			    }	
+//			star.getVelocity().scl(1/delta);
+//		}
 //			for (Block block : collidableBlocks) {
 //				if (block == null) continue;
 //				if (star.getBounds().overlaps(block.getBounds())) {

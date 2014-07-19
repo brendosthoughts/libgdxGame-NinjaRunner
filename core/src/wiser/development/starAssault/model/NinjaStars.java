@@ -17,8 +17,8 @@ public class NinjaStars {
 
 	 public NinjaStars(Vector2 pos, Vector2 vel) {
 		this.position = pos;
-		this.bounds.setX(position.x + SIZE);
-		this.bounds.setY(position.y + SIZE);
+		this.bounds.setX(position.x );
+		this.bounds.setY(position.y);
 		this.bounds.width = SIZE;
 		this.bounds.height = SIZE;
 		this.velocity= vel;
@@ -32,8 +32,8 @@ public class NinjaStars {
 	 }
 	 public void setPosition(Vector2 pos){
 		 this.position=pos;
-		 this.bounds.setX(position.x+SIZE);
-		 this.bounds.setY(position.y+SIZE);
+		 this.bounds.setX(position.x);
+		 this.bounds.setY(position.y);
 		 
 	 }
 	public Vector2 getVelocity() {

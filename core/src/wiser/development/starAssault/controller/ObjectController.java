@@ -37,7 +37,7 @@ public class ObjectController {
 	private FireBall[][] fireBalls;
 	private ArrayList<Skeleton> collidableSkeletons = new ArrayList<Skeleton>();
 	private ArrayList<NinjaStars> thrownStars= new ArrayList<NinjaStars>();
-		
+	private Skeleton skeleton;
 	public ObjectController(World world, GameScreen playScreen) {
 		this.world = world;
 		this.skeletons = world.getLevel().getSkeletons();
@@ -79,7 +79,7 @@ public class ObjectController {
 		}
 		
 		int index=0;
-		/*thrownStars=world.getLevel().getThrownStars();
+		thrownStars=world.getLevel().getThrownStars();
 		Iterator<NinjaStars> starIt =  thrownStars.iterator();
 
 		while(starIt.hasNext()){
@@ -92,25 +92,25 @@ public class ObjectController {
 			while(skel.hasNext())
 			{
 				
-			    Skeleton skeleton = skel.next();
-			    if (star.getBounds().overlaps(skeleton.getBounds()) ) {
+			    skeleton = skel.next();
+			    if (star.getBounds().overlaps(skeleton.getBounds()) && !(skeleton.getState().equals(SkeletonState.DEAD))) {
 			    		skeleton.setState(SkeletonState.DEAD);	
 			    		skeleton.setVelocity(new Vector2(0,0));
-			    		
-						world.getLevel().destroyThrowingStar(index);
+			    		starIt.remove();
+					//	world.getLevel().destroyThrowingStar(index);
 			    		
 			    }							
 			}
 			for (Block block : collidableBlocks) {
 				if (block == null) continue;
 				if (star.getBounds().overlaps(block.getBounds())) {
-					world.getLevel().destroyThrowingStar(index);
+					starIt.remove();
 				}
 			}
 			star.getVelocity().scl(1/delta);
 			index++;
 			star.update(delta);
-		}	*/
+		}	
 		
 		
 	}
