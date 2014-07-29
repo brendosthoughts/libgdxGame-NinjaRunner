@@ -35,9 +35,9 @@ public class ObjectController {
 	private Bob bob;
 	private Array<Block> collidableBlocks = new Array<Block>();
 	private FireBall[][] fireBalls;
-	private ArrayList<Skeleton> collidableSkeletons = new ArrayList<Skeleton>();
 	private ArrayList<NinjaStars> thrownStars= new ArrayList<NinjaStars>();
 	private Skeleton skeleton;
+	
 	public ObjectController(World world, GameScreen playScreen) {
 		this.world = world;
 		this.skeletons = world.getLevel().getSkeletons();
@@ -78,7 +78,12 @@ public class ObjectController {
 			}
 		}
 		
-		int index=0;
+	  controlStars(delta);
+		
+		
+	}
+	
+	private void controlStars(float delta ){
 		thrownStars=world.getLevel().getThrownStars();
 		Iterator<NinjaStars> starIt =  thrownStars.iterator();
 
@@ -101,19 +106,30 @@ public class ObjectController {
 			    		
 			    }							
 			}
+			populateCollidableBlocks(0, 0, world.getLevel().getWidth(), world.getLevel().getWidth() );
 			for (Block block : collidableBlocks) {
-				if (block == null) continue;
-				if (star.getBounds().overlaps(block.getBounds())) {
-					starIt.remove();
+				if (block != null) {
+					
+				   if (star.getBounds().overlaps(block.getBounds())) {
+					  starIt.remove();
+				   }
 				}
 			}
 			star.getVelocity().scl(1/delta);
-			index++;
 			star.update(delta);
 		}	
-		
-		
 	}
+	private void populateCollidableBlocks(int startX, int startY, int endX, int endY) {
+		collidableBlocks.clear();
+		for (int x = startX; x <= endX; x++) {
+			for (int y = startY; y <= endY; y++) {
+				if (x >= 0 && x < world.getLevel().getWidth() && y >=0 && y < world.getLevel().getHeight()) {
+					collidableBlocks.add(world.getLevel().getCollidableBlocks(x, y));
+				}
+			}
+		}
+	}
+
 
 
 }

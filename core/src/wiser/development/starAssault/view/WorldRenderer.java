@@ -2,6 +2,7 @@ package wiser.development.starAssault.view;
 
 
 import wiser.development.starAssault.model.Block;
+import wiser.development.starAssault.model.Block.BlockType;
 import wiser.development.starAssault.model.Bob;
 import wiser.development.starAssault.model.Bob.BobState;
 import wiser.development.starAssault.model.Fire;
@@ -138,7 +139,11 @@ public class WorldRenderer {
 
 	private void drawBlocks() {
 		for (Block block : world.getDrawableBlocks((int)this.cam.viewportWidth , (int)this.cam.viewportHeight)) {
-			spriteBatch.draw(Assets.blockTexture, block.getPosition().x , block.getPosition().y, Block.SIZE , Block.SIZE );
+			if(block.getType().equals(BlockType.METAL)){
+				spriteBatch.draw(Assets.blockTexture, block.getPosition().x , block.getPosition().y, Block.SIZE , Block.SIZE );
+			}else if(block.getType().equals(BlockType.SPIKE)){
+				spriteBatch.draw(Assets.spikeTexture, block.getPosition().x , block.getPosition().y, Block.SPIKESIZE , Block.SPIKESIZE );
+			}
 		}
 	}
 	private void drawNinjaStars(){

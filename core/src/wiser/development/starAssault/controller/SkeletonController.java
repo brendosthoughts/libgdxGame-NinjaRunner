@@ -26,14 +26,11 @@ public class SkeletonController {
 	private static final float ACCELERATION 	= 3f;
 	private static final float MAX_VEL 	= 1f;
 
-
-	
 	private World 	world;
 	private ArrayList<Skeleton> skeletons =new ArrayList<Skeleton>();
 	private GameScreen gameScreen;
 	private Bob bob;
 	private Array<Block> collidableBlocks = new Array<Block>();
-	private ArrayList<NinjaStars> thrownStars = new ArrayList<NinjaStars>();
 	
 		
 	public SkeletonController(World world, GameScreen playScreen) {

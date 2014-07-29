@@ -10,15 +10,20 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.utils.TimeUtils;
 
 
 public class MainMenuScreen implements Screen{
-	public static final float CAMERA_WIDTH = 15f;
-	public static final float CAMERA_HEIGHT = 10.5f;
+	public static final float CAMERA_WIDTH = 45f;
+	public static final float CAMERA_HEIGHT = 31.5f;
 	
 
 	Game game;
@@ -32,6 +37,11 @@ public class MainMenuScreen implements Screen{
 	Rectangle levelsBounds;
    Rectangle levelSelectBounds[];
    String levelNum;
+   TextButton button;
+   TextButtonStyle textButtonStyle;
+   BitmapFont font;
+   Skin skin;
+   TextureAtlas buttonAtlas;
 	
 	int levelSelect, i, j;
 
@@ -68,12 +78,12 @@ public class MainMenuScreen implements Screen{
 			}
 
 			if (soundBounds.contains(touchPoint.x, touchPoint.y)) {
-				Assets.playSound(Assets.clickSound);
+				/*Assets.playSound(Assets.clickSound);
 				Settings.soundEnabled = !Settings.soundEnabled;
 				if (Settings.soundEnabled)
 					Assets.music.play();
 				else
-					Assets.music.pause();
+					Assets.music.pause();*/
 			}
 		}
 	}
@@ -93,7 +103,19 @@ public class MainMenuScreen implements Screen{
 		batcher.enableBlending();
 		batcher.begin();
 		batcher.draw(Assets.logo, CAMERA_WIDTH/8, 3*CAMERA_HEIGHT/5 , CAMERA_WIDTH*6/8, 2*CAMERA_HEIGHT/5);
-		batcher.draw(Settings.soundEnabled ? Assets.soundOn : Assets.soundOff, 0, 0, 1.5f, 1.5f);
+	//	batcher.draw(Settings.soundEnabled ? Assets.soundOn : Assets.soundOff, 0, 0, 1.5f, 1.5f);
+        font = new BitmapFont();
+        skin = new Skin();
+        buttonAtlas = new TextureAtlas(Gdx.files.internal("textures2/texture.pack"));
+        skin.addRegions(buttonAtlas);
+        textButtonStyle = new TextButtonStyle();
+        textButtonStyle.font = font;
+        textButtonStyle.up = skin.getDrawable("ghost-1");
+        textButtonStyle.down = skin.getDrawable("ninja-1");
+        //textButtonStyle.checked = skin.getDrawable("checked-button");
+        button = new TextButton("Button1", textButtonStyle);
+       // batcher.draw(button , 0, 0, 1.5f, 1.5f);
+        
 		int j=2;
 		int k=0;
 		levelSelectBounds= new Rectangle[Settings.levels+1];
@@ -127,11 +149,11 @@ public class MainMenuScreen implements Screen{
 	
 			levelNum= ""+ i;
 			Assets.font.setColor(0f, 0f, 0f, 1f);
-			Assets.font.setScale(0.04f);
+			Assets.font.setScale(0.05f, 0.05f);
 			Assets.font.draw(batcher, levelNum, CAMERA_WIDTH*(i-k-1) /6 , (j)*CAMERA_HEIGHT/5);
 			
 		}	
-
+        
 		
 		batcher.end();
 

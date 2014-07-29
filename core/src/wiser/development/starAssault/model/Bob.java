@@ -110,9 +110,13 @@ public class Bob {
 		bounds.y = position.y;
 		if(this.state.equals(BobState.PUNCHING)){
 			punchTime+=delta;
-				if(punchTime > 20*delta){
+				if(punchTime< delta*40){
+					punchTime+=delta;
+				}else if(punchTime>70*delta){
 					this.state=BobState.IDLE;
 					punchTime=0;
+				}else{
+					this.state=BobState.IDLE;
 				}
 		}
 

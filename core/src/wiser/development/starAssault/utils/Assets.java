@@ -39,6 +39,7 @@ public class Assets {
 	public static TextureRegion bobIdleLeft;
 	public static TextureRegion bobIdleRight;
 	public static TextureRegion blockTexture;
+	public static TextureRegion spikeTexture;
 	public static TextureRegion fireTexture;
 	public static TextureRegion fireBallUpTexture;
 	public static TextureRegion fireBallDownTexture;
@@ -102,8 +103,8 @@ public class Assets {
 		hitSound = Gdx.audio.newSound(Gdx.files.internal("hit.wav"));
 		clickSound = Gdx.audio.newSound(Gdx.files.internal("click.wav"));
 		
-		font = new BitmapFont(Gdx.files.internal("font.fnt"), Gdx.files.internal("font.png"), false);
-		
+		font = new BitmapFont();
+		//new BitmapFont(Gdx.files.internal("font.fnt"), Gdx.files.internal("font.png"), false);
 		
 		TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("textures2/texture.pack"));
 		ninjaStars = atlas.findRegion("ninja-star");
@@ -111,6 +112,7 @@ public class Assets {
 		bobIdleRight = atlas.findRegion("ninja-1");
 		bobIdleRight.flip(true, false);
 		blockTexture = atlas.findRegion("block");
+		spikeTexture = atlas.findRegion("spikes");
 		fireTexture = atlas.findRegion("fire");
 		fireBallDownTexture = atlas.findRegion("fire-ball");	
 		fireBallUpTexture = new TextureRegion(fireBallDownTexture);	

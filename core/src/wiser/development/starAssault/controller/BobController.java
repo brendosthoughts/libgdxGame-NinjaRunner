@@ -7,6 +7,7 @@ import java.util.Map;
 
 import wiser.development.starAssault.model.Block;
 import wiser.development.starAssault.model.Bob;
+import wiser.development.starAssault.model.Block.BlockType;
 import wiser.development.starAssault.model.Bob.BobState;
 import wiser.development.starAssault.model.Fire;
 import wiser.development.starAssault.model.FireBall;
@@ -205,6 +206,10 @@ public class BobController {
 			if (bobRect.overlaps(block.getBounds())) {
 				bob.getVelocity().x = 0;
 				world.getCollisionRects().add(block.getBounds());
+				if(block.getType().equals(BlockType.SPIKE)){
+					bob.setState(BobState.DEAD);
+					gameScreen.setGameState(GameState.GAME_OVER);
+				}
 				break;
 			}
 		}
@@ -276,6 +281,10 @@ public class BobController {
 			if (bobRect.overlaps(block.getBounds())) {
 				if (bob.getVelocity().y < 0) {
 					grounded = true;
+				}
+				if(block.getType().equals(BlockType.SPIKE)){
+					bob.setState(BobState.DEAD);
+					gameScreen.setGameState(GameState.GAME_OVER);
 				}
 				bob.getVelocity().y = 0;
 				world.getCollisionRects().add(block.getBounds());

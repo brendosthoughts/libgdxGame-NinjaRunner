@@ -3,6 +3,7 @@ package wiser.development.starAssault.model;
 
 import java.util.ArrayList;
 
+import wiser.development.starAssault.model.Block.BlockType;
 import wiser.development.starAssault.model.Skeleton.SkeletonType;
 
 import com.badlogic.gdx.math.Vector2;
@@ -128,20 +129,7 @@ public class Level {
 	private void level_one(){
 		width = 50;
 		height = 20;
-		blocks = new Block[width][height];
-		fires = new Fire[width][height];
-		skeletons =new Skeleton[width][height];
-		ninja_stars =new NinjaStars[width][height];
-		springs = new Spring[width][height];
-		//draw all as empty block to start 
-		for (int col = 0; col < width; col++) {
-			for (int row = 0; row < height; row++) {
-				blocks[col][row] = null;
-				fires[col][row]= null;
-				skeletons[col][row]=null;
-				ninja_stars[col][row]=null;
-			}
-		}
+		level_setup(width, height);
 
 		for (int col = 0; col < width; col++) {
 			blocks[col][0] = new Block(new Vector2(col, 0));
@@ -213,30 +201,10 @@ public class Level {
 		// all firballs in this level only move vertically
 		width = 85;
 		height = 30;
-		blocks = new Block[width][height];
-		fires = new Fire[width][height];
-		skeletons= new Skeleton[width][height];
-		ninja_stars =new NinjaStars[width][height];
-		springs= new Spring[width][height];
-		fire_balls = new FireBall[width][height];
-		
-		//draw all as empty block to start 
-		for (int col = 0; col < width; col++) {
-			for (int row = 0; row < height; row++) {
-				blocks[col][row] = null;
-				fires[col][row]= null;
-				skeletons[col][row]=null;
-				ninja_stars[col][row]=null;
-				springs[col][row]=null;
-				fire_balls[col][row]=null;
-			}
-		}
+		level_setup(width, height);
 
 		for (int col = 0; col < width; col++) {
 			blocks[col][0] = new Block(new Vector2(col, 0));
-			/*if ((col > 4)&& ((col!=9) || (col!=15) || (col!=16 )|| (col!=19 )|| (col!=23 )|| (col!=26 )|| (col!=27 )|| (col!=29 )|| (col!= 30) )){
-				blocks[col][2] = new Block(new Vector2(col, 2));
-			}*/
 		}
 
 		 // fire one
@@ -248,12 +216,13 @@ public class Level {
 		realSkeletons.add(skeletons[10][1]);
 		ninja_stars[7][2]=new NinjaStars(new Vector2(7, 2), new Vector2(0,0));
 		springs[1][1] = new Spring(new Vector2(1,1));		
+		blocks[9][5]= new Block(new Vector2(9,5), BlockType.SPIKE);
 		springs[10][1] = new Spring(new Vector2(10,1));
 		fires[11][1]= new Fire(new Vector2(11,1));
 		//jump one
 		 blocks[12][1] = new Block(new Vector2( 12, 1));
 		 blocks[12][2] = new Block(new Vector2(12 ,2 ));
-
+		 
 		
 		//fire 2
 		fires[13][1]= new Fire(new Vector2(13,1));
@@ -347,7 +316,27 @@ public class Level {
 		// TODO Auto-generated method stub
 		
 	}
+private void level_setup(int width, int height){
+	blocks = new Block[width][height];
+	fires = new Fire[width][height];
+	skeletons =new Skeleton[width][height];
+	ninja_stars =new NinjaStars[width][height];
+	springs = new Spring[width][height];
+	fire_balls= new FireBall[width][height];
+	//draw all as empty block to start 
+	for (int col = 0; col < width; col++) {
+		for (int row = 0; row < height; row++) {
+			blocks[col][row] = null;
+			fires[col][row]= null;
+			skeletons[col][row]=null;
+			ninja_stars[col][row]=null;
+			springs[col][row]=null;
+			fire_balls[col][row]=null;
+		}
+	}
 
+	
+}
 
 
 
