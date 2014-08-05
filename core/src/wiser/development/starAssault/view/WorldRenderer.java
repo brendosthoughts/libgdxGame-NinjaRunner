@@ -194,7 +194,7 @@ private void drawSkeletons(){
 			bobFrame=Assets.bobDead;	
 
 		}
-		spriteBatch.draw(bobFrame, bob.getPosition().x, bob.getPosition().y , Bob.SIZE , Bob.SIZE);
+		spriteBatch.draw(bobFrame, bob.getPosition().x, bob.getPosition().y , Bob.SIZE_WIDTH , Bob.SIZE_HEIGHT);
 		
 	}
 

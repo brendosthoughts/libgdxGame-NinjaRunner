@@ -61,8 +61,6 @@ public class SkeletonController {
 			}else{
 		    
 				skeleton.getVelocity().scl(delta);
-			
-		    
 				//skeleton.getAcceleration().y = Assets.GRAVITY;
 				moveSkeleton(skeleton, delta);
 				// apply acceleration to change velocity

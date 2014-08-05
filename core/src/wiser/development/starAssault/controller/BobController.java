@@ -33,7 +33,7 @@ public class BobController {
 	private static final long MIN_THROW_TIME    = 500l;
 	private static final float ACCELERATION 	= 20f;
 	private static final float GRAVITY 			= -20f;
-	private static final float MAX_JUMP_SPEED	= 7f;
+	private static final float MAX_JUMP_SPEED	= 9f;
 	private static final float DAMP 			= 0.90f;
 	private static final float MAX_VEL 			= 4f;
 	private World 	world;
@@ -87,15 +87,18 @@ public class BobController {
 	}
 
 	public void jumpPressed() {
-		keys.get(keys.put(Keys.JUMP, true));
+		/*keys.get(keys.put(Keys.JUMP, true));*/
+		bobJump();
 	}
 
 	public void punchPressed() {
-		keys.get(keys.put(Keys.PUNCH, true));
+	//	keys.get(keys.put(Keys.PUNCH, true));
+		bobPunch();
 		punchingPressed=true;
 	}
 	public void throwPressed(){
-		keys.get(keys.put(Keys.THROWSTAR, true));
+		bobThrowStar();
+		//keys.get(keys.put(Keys.THROWSTAR, true));
 	}
 
 	public void leftReleased() {
@@ -119,6 +122,9 @@ public class BobController {
 	public void throwReleased(){
 		keys.get(keys.put(Keys.THROWSTAR, false));
 		
+	}
+	public void setIdle(){
+		bob.setState(BobState.IDLE);
 	}
 	/** The main update method **/
 	public void update(float delta) {
@@ -386,7 +392,7 @@ public class BobController {
 	/** Change Bob's state and parameters based on input controls **/
 	private void processInput() {
 		if (keys.get(Keys.JUMP)) {
-			if (!bob.getState().equals(BobState.JUMPING)) {
+			/*if (!bob.getState().equals(BobState.JUMPING)) {
 				jumpingPressed = true;
 				jumpPressedTime = System.currentTimeMillis();
 				bob.setState(BobState.JUMPING);
@@ -401,34 +407,34 @@ public class BobController {
 						bob.getVelocity().y = MAX_JUMP_SPEED;
 					}
 				}
-			}
+			}*/
 		}
 		if (keys.get(Keys.PUNCH)) {
 			/// punch is pressed
-			if(!bob.getState().equals(BobState.JUMPING)){
+		/*	if(!bob.getState().equals(BobState.JUMPING)){
 			punchingPressed = true;
 			bob.setState(BobState.PUNCHING);  
-			}
+			}*/
 		}
 		if (keys.get(Keys.THROWSTAR ) && (bob.getThrowingStars() > 0)){
 		// make the throwing star , and give it a velocity and add it to a arraylist of throwing stars, 
 		// in collision checking stars will be checked to see if hit something , if so they disapear
 
-				if(bob.canThrow()){
-					throwTime= System.currentTimeMillis();
-					bob.setState(BobState.THROW);
-					bob.setThrowingStars(bob.getThrowingStars() -1);
-					
-					if(bob.isFacingLeft()){
-					world.getLevel().addThrowingStar(bob.getPosition(), new Vector2(-6,0));
-					}else{
-					world.getLevel().addThrowingStar(bob.getPosition(), new Vector2(6,0));	
-					}	
-					bob.setCanThrow(false);
-				}
-				else if ((System.currentTimeMillis() - throwTime >= MIN_THROW_TIME)){
-					bob.setCanThrow(true);
-				} 
+//				if(bob.canThrow()){
+//					throwTime= System.currentTimeMillis();
+//					bob.setState(BobState.THROW);
+//					bob.setThrowingStars(bob.getThrowingStars() -1);
+//					
+//					if(bob.isFacingLeft()){
+//					world.getLevel().addThrowingStar(bob.getPosition(), new Vector2(-6,0));
+//					}else{
+//					world.getLevel().addThrowingStar(bob.getPosition(), new Vector2(6,0));	
+//					}	
+//					bob.setCanThrow(false);
+//				}
+//				else if ((System.currentTimeMillis() - throwTime >= MIN_THROW_TIME)){
+//					bob.setCanThrow(true);
+//				} 
 				
 		}
 			
@@ -457,6 +463,48 @@ public class BobController {
 			
 		}
 	
+	}
+	public void bobJump(){
+		if (!bob.getState().equals(BobState.JUMPING) ) {
+			jumpingPressed = true;
+			jumpPressedTime = System.currentTimeMillis();
+			bob.setState(BobState.JUMPING);
+			bob.getVelocity().y = MAX_JUMP_SPEED; 
+			grounded = false;
+
+		} 
+		if (jumpingPressed && ((System.currentTimeMillis() - jumpPressedTime) >= LONG_JUMP_PRESS)) {
+				jumpingPressed = false;
+		} else {
+			if (jumpingPressed) {
+				bob.getVelocity().y = MAX_JUMP_SPEED;
+			}
+		}
+		
+	}
+	public void bobThrowStar(){
+		if(bob.canThrow() && bob.getThrowingStars() > 0){
+			throwTime= System.currentTimeMillis();
+			bob.setState(BobState.THROW);
+			bob.setThrowingStars(bob.getThrowingStars() -1);
+			
+			if(bob.isFacingLeft()){
+			world.getLevel().addThrowingStar(bob.getPosition(), new Vector2(-6,0));
+			}else{
+			world.getLevel().addThrowingStar(bob.getPosition(), new Vector2(6,0));	
+			}	
+			bob.setCanThrow(false);
+		}
+		else if ((System.currentTimeMillis() - throwTime >= MIN_THROW_TIME)){
+			bob.setCanThrow(true);
+		} 
+		
+	}
+	public void bobPunch(){
+		if(!bob.getState().equals(BobState.JUMPING)){
+			punchingPressed = true;
+			bob.setState(BobState.PUNCHING);  
+			}		
 	}
 	public Bob getBob(){
 		return bob;

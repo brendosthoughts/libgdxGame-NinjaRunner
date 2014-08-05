@@ -10,10 +10,11 @@ public class Skeleton {
 		IDLE, WALKING, DEAD
 	}
 	public enum SkeletonType{
-		LEFT, RIGHT, BACKFORTH, TOUGH_LEFT, TOUGH_RIGHT, TOUGH_BACKFORTH
+		LEFT, RIGHT, BACKFORTH, TOUGH_LEFT, TOUGH_RIGHT, TOUGH_BACKFORTH, 
+		REAPER_RIGHT, REAPER_LEFT, REAPER_BACKFORTH
 	}
 	public static final float SIZE = 0.7f; // part of a unit
-
+	public static final float REAPER_SIZE = 1f; // part of a unit
 	Vector2 	position = new Vector2();
 	Vector2 	acceleration = new Vector2();
 	Vector2 	velocity = new Vector2(-5, 0);
@@ -33,9 +34,15 @@ public class Skeleton {
 		this.bounds.y = position.y;
 		this.state= SkeletonState.WALKING;
 		this.type=skeleton_type;
-		this.setHealth(1);
-		this.bounds.height = SIZE;
-		this.bounds.width = SIZE;
+		if(skeleton_type==SkeletonType.REAPER_RIGHT || skeleton_type==SkeletonType.REAPER_LEFT || skeleton_type==SkeletonType.REAPER_BACKFORTH){
+			this.setHealth(2);
+			this.bounds.height=REAPER_SIZE;
+			this.bounds.width=REAPER_SIZE;
+		}else{
+			this.setHealth(1);
+			this.bounds.height = SIZE;
+			this.bounds.width = SIZE;
+		}
 	}
 	public Vector2 getInitialPosition(){
 		return new Vector2(initpos_x, initpos_y);

@@ -10,7 +10,8 @@ public class Bob {
 	public enum BobState {
 		IDLE, WALKING, JUMPING, PUNCHING, DEAD, THROW
 	}
-	public static final float SIZE = 0.8f; // part of a unit
+	public static final float SIZE_WIDTH = 0.6f; // part of a unit
+	public static final float SIZE_HEIGHT =0.9f;
 
 	Vector2 	position = new Vector2();
 	Vector2 	acceleration = new Vector2();
@@ -29,8 +30,8 @@ public class Bob {
 		this.bounds.x = position.x;
 		this.bounds.y = position.y;
 		this.state = BobState.IDLE;
-		this.bounds.height = SIZE;
-		this.bounds.width = SIZE;
+		this.bounds.height = SIZE_HEIGHT;
+		this.bounds.width = SIZE_WIDTH;
 	}
 
 	public boolean isFacingLeft() {
@@ -81,8 +82,8 @@ public class Bob {
 
 	public void setPosition(Vector2 position) {
 		this.position = position;
-		this.bounds.setX(position.x + SIZE);
-		this.bounds.setY(position.y + SIZE);
+		this.bounds.setX(position.x + SIZE_WIDTH-0.1F);
+		this.bounds.setY(position.y + SIZE_HEIGHT-0.1F);
 	}
 	public void setAcceleration(Vector2 acceleration) {
 		this.acceleration = acceleration;
@@ -112,11 +113,9 @@ public class Bob {
 			punchTime+=delta;
 				if(punchTime< delta*40){
 					punchTime+=delta;
-				}else if(punchTime>70*delta){
-					this.state=BobState.IDLE;
-					punchTime=0;
 				}else{
 					this.state=BobState.IDLE;
+					punchTime=0;
 				}
 		}
 

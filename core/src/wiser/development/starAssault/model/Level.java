@@ -300,8 +300,73 @@ public class Level {
 	}
 	
 	private void level_three() {
-		// TODO Auto-generated method stub
+		// all firballs in this level only move vertically
+		width = 100;
+		height = 100;
+		level_setup(width, height);
+		blocks[1][1] = new Block(new Vector2(1,1 ));
+		blocks[2][1] = new Block(new Vector2(2,1 ));
+		blocks[3][1] = new Block(new Vector2(3 ,1));
+		blocks[4][1] = new Block(new Vector2(4,1 ));
+		blocks[5][2] = new Block(new Vector2(5,2 ));
+		blocks[6][2] = new Block(new Vector2( 6,2));
+		//sprin and fire pit
+		// and ninja stars over area
+		blocks[9][3] = new Block(new Vector2(9,3 ));
+		blocks[10][3] = new Block(new Vector2(10,3 ));
+		blocks[11][3] = new Block(new Vector2(11,3 ));
+		/// put in some sort of spikes here
+		blocks[12][3] = new Block(new Vector2(12,3 ));
+//		upside down spikes here
+		blocks[14][3] = new Block(new Vector2(14,3 ));
+		blocks[15][3] = new Block(new Vector2(15,3 ));
+		blocks[16][3] = new Block(new Vector2(16, 3 ));
+		blocks[17][3] = new Block(new Vector2(17,3 ));
+		blocks[18][3] = new Block(new Vector2(18,3 ));
+		blocks[19][4] = new Block(new Vector2(19,4 ));
+		blocks[20][5] = new Block(new Vector2(20,5 ));
+		blocks[20][6] = new Block(new Vector2(20, 6 ));
+		blocks[21][7] = new Block(new Vector2(21, 7 ));
+		blocks[22][7] = new Block(new Vector2(22, 7));
+		// were going to switch directions here
+//		spring should go here so player an jump gap
+		blocks[23][7] = new Block(new Vector2(23, 7 ));
+		blocks[23][8] = new Block(new Vector2(23, 8 ));
+		blocks[23][9] = new Block(new Vector2(23, 9 ));
+		blocks[23][10]= new Block(new Vector2(23, 10 ));
+		blocks[23][11]= new Block(new Vector2(23, 11 ));
+		blocks[23][12]= new Block(new Vector2(23, 12 ));
+		blocks[23][13]= new Block(new Vector2(23, 13 ));
+		blocks[23][14]= new Block(new Vector2(23, 14 ));
+		blocks[23][15]= new Block(new Vector2(23, 15 ), BlockType.SPIKE);
+		blocks[24][15]= new Block(new Vector2(24, 15 ), BlockType.SPIKE);
+		blocks[25][15]= new Block(new Vector2(25, 15 ), BlockType.SPIKE);
 		
+		
+		blocks[20][11] = new Block(new Vector2(20,11 ));
+		blocks[19][11] = new Block(new Vector2(19,11 ));
+		blocks[18][11] = new Block(new Vector2(18,11 ));
+		//put skeleton backforth in here
+		blocks[17][11] = new Block(new Vector2(17,11 ));
+		blocks[16][11] = new Block(new Vector2(16,11 ));
+		
+		blocks[15][11] = new Block(new Vector2(15,11 ));
+		blocks[14][10] = new Block(new Vector2(14, 10 ));
+		blocks[13][9] = new Block(new Vector2(13,9 ));
+		//insert block of fire along with fireball up down 
+		blocks[12][10] = new Block(new Vector2(12, 10 ));
+		blocks[11][11] = new Block(new Vector2(11,11 ));
+		blocks[11][12] = new Block(new Vector2(11, 12 ));
+		blocks[10][13] = new Block(new Vector2(10, 13 ));
+		blocks[9][14] = new Block(new Vector2(9,14 ));
+		blocks[9][15] = new Block(new Vector2(9,15 ));
+		blocks[9][16] = new Block(new Vector2(9,16 ));
+		blocks[9][17] = new Block(new Vector2(9,17 ));
+		blocks[9][18] = new Block(new Vector2(9,18 ));
+		
+		blocks[12][14] = new Block(new Vector2(12, 14 ));
+		blocks[12][15] = new Block(new Vector2(12, 15 ));
+		 finish= new Vector2(53, 15);
 	}
 	private void level_four() {
 		// TODO Auto-generated method stub

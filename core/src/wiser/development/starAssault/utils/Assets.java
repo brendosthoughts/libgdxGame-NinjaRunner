@@ -56,6 +56,8 @@ public class Assets {
 	public static Animation walkLeftAnimation;
 	public static Animation walkRightAnimation;
 	
+	public static Animation ghostLeftAnimation;
+	public static Animation ghostRightAnimation;
 	public static Animation punchLeftAnimation;
 	public static Animation punchRightAnimation;	
 	public static Animation skeletonLeftAnimation;
@@ -117,22 +119,33 @@ public class Assets {
 		fireBallDownTexture = atlas.findRegion("fire-ball");	
 		fireBallUpTexture = new TextureRegion(fireBallDownTexture);	
 		fireBallUpTexture.flip(true, true);
+
 		TextureRegion[] throwingStarFrames = new TextureRegion[2];
 		throwingStarFrames[0]=atlas.findRegion("ninja-star");
 		throwingStarFrames[1]= atlas.findRegion("ninja-star-rotate");
 		
 		
 		throwingStarAnimation = new Animation( RUNNING_FRAME_DURATION ,throwingStarFrames);
-		
-		
+
+		TextureRegion [] ghostLeftFrames = new TextureRegion[4];		
+	
 		TextureRegion[] walkLeftFrames = new TextureRegion[6];
 		for (int i = 0; i < 6; i++) {
 			walkLeftFrames[i] = atlas.findRegion("ninja-" + (i+2));
 		}
 		walkLeftAnimation = new Animation(RUNNING_FRAME_DURATION, walkLeftFrames);
 
-		TextureRegion[] walkRightFrames = new TextureRegion[6];
+		for(int i =0 ; i<4; i++){
+			ghostLeftFrames[i] = atlas.findRegion("ghost-" + (i+1));
+		}
+		ghostLeftAnimation = new Animation(RUNNING_FRAME_DURATION*3/2, ghostLeftFrames);
 
+		TextureRegion[] walkRightFrames = new TextureRegion[6];
+		TextureRegion[] ghostRightFrames = new TextureRegion[4];
+		for (int i = 0; i < 4; i++) {
+			ghostRightFrames[i] = new TextureRegion(ghostLeftFrames[i]);
+			ghostRightFrames[i].flip(true, false);
+		}
 		for (int i = 0; i < 6; i++) {
 			walkRightFrames[i] = new TextureRegion(walkLeftFrames[i]);
 			walkRightFrames[i].flip(true, false);
