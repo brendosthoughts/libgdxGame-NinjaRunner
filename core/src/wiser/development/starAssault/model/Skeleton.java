@@ -1,19 +1,23 @@
 package wiser.development.starAssault.model;
 
 
+import wiser.development.starAssault.model.Platform.PlatformState;
+
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Skeleton {
 	
 	public enum SkeletonState {
-		IDLE, WALKING, DEAD
+		IDLE,WALKING, DEAD
 	}
 	public enum SkeletonType{
-		LEFT, RIGHT, BACKFORTH, TOUGH_LEFT, TOUGH_RIGHT, TOUGH_BACKFORTH, 
-		REAPER_RIGHT, REAPER_LEFT, REAPER_BACKFORTH
+		 SKELETON, TOUGH, REAPER, FIRE
 	}
 	public static final float SIZE = 0.7f; // part of a unit
+	public static final float SIZE_WIDTH = 0.5f;
+	public static final float SIZE_HEIGHT = 0.5f;
+	
 	public static final float REAPER_SIZE = 1f; // part of a unit
 	Vector2 	position = new Vector2();
 	Vector2 	acceleration = new Vector2();
@@ -21,11 +25,14 @@ public class Skeleton {
 	Rectangle 	bounds = new Rectangle();
 	SkeletonState		state = SkeletonState.IDLE;
 	SkeletonType type;
+	boolean custom; 
 	private int health;
 	boolean		facingLeft = true;
+	boolean  backforth;
 	float		stateTime = 0;
 	float initpos_x, initpos_y;
-	
+	float variance;
+	float speed;
 	public Skeleton (Vector2 position, SkeletonType skeleton_type ) {
 		this.initpos_x=position.x;
 		this.initpos_y=position.y;
@@ -34,7 +41,10 @@ public class Skeleton {
 		this.bounds.y = position.y;
 		this.state= SkeletonState.WALKING;
 		this.type=skeleton_type;
-		if(skeleton_type==SkeletonType.REAPER_RIGHT || skeleton_type==SkeletonType.REAPER_LEFT || skeleton_type==SkeletonType.REAPER_BACKFORTH){
+		this.variance=2f;
+		this.velocity=new Vector2(2,0);
+		this.backforth=true;
+		if(skeleton_type==SkeletonType.REAPER){
 			this.setHealth(2);
 			this.bounds.height=REAPER_SIZE;
 			this.bounds.width=REAPER_SIZE;
@@ -43,6 +53,28 @@ public class Skeleton {
 			this.bounds.height = SIZE;
 			this.bounds.width = SIZE;
 		}
+		this.custom=false;
+	}
+	public Skeleton(Vector2 initpos, float speed , float variance, SkeletonType type, boolean backforth) {
+		this.initpos_x= initpos.x;
+		this.initpos_y= initpos.y;
+		this.position = initpos;
+		this.variance =variance;
+		this.bounds.x=position.x ;
+		this.bounds.y=position.y ;
+		this.bounds.width = SIZE_WIDTH;
+		this.bounds.height = SIZE_HEIGHT;
+		this.speed=speed;
+		this.setHealth(1);
+		this.velocity= new Vector2(speed, 0);
+		this.type=type;
+		this.custom=true;
+		this.backforth=backforth;
+	
+	}
+	public boolean isCustom(){
+		return custom;
+		
 	}
 	public Vector2 getInitialPosition(){
 		return new Vector2(initpos_x, initpos_y);
@@ -120,6 +152,14 @@ public class Skeleton {
 	}
 	public void setHealth(int health) {
 		this.health = health;
+	}
+	public boolean isBackforth() {
+		// TODO Auto-generated method stub
+		return backforth;
+	}
+	public float getVariance() {
+		// TODO Auto-generated method stub
+		return this.variance;
 	}
 
 

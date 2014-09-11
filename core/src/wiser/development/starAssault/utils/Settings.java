@@ -8,7 +8,7 @@ public class Settings {
 	public static boolean soundEnabled = false;
 	public final static String file = ".starAssault";
 	public static int levels=12;
-	public static int levelReached=3;
+	public static int levelReached=4;
 
 	public static void load () {
 		try {
@@ -18,6 +18,8 @@ public class Settings {
 			
 			soundEnabled = Boolean.parseBoolean(strings[0]);
 			levelReached =  Integer.parseInt(strings[1]);
+			
+			
 
 		} catch (Throwable e) {
 		
@@ -40,15 +42,16 @@ public class Settings {
 		try{
 			FileHandle filehandle = Gdx.files.external(file);	
 			filehandle.writeString(Boolean.toString(soundEnabled)+"\n", false);
-			filehandle.writeString(Integer.toString(levelReached)+"\n", true);
+			filehandle.writeString(Integer.toString(level)+"\n", true);
+			load();
 			
 		}catch(Throwable e){
+			
 			//figure out how to handle not being able to save files later
 		}
-		
-		
 	
 	}
+
 
 	
 }

@@ -8,7 +8,7 @@ import wiser.development.starAssault.model.Level;
 public class Bob {
 
 	public enum BobState {
-		IDLE, WALKING, JUMPING, PUNCHING, DEAD, THROW
+		IDLE, WALKING, JUMPING, DOUBLEJUMP, PUNCHING, DEAD, THROW, CLIMBING, IDLE_CLIMBING
 	}
 	public static final float SIZE_WIDTH = 0.6f; // part of a unit
 	public static final float SIZE_HEIGHT =0.9f;
@@ -17,7 +17,8 @@ public class Bob {
 	Vector2 	acceleration = new Vector2();
 	Vector2 	velocity = new Vector2();
 	Rectangle 	bounds = new Rectangle();
-	BobState		state = BobState.IDLE;
+	BobState	state = BobState.IDLE;
+	BobState 	lastState = BobState.IDLE;
 	boolean		facingLeft = false;
 	float		stateTime = 0;
 	boolean		longJump = false , canThrow= true;
@@ -63,6 +64,7 @@ public class Bob {
 	}
 	
 	public void setState(BobState newState) {
+		this.lastState=this.state;
 		this.state = newState;
 	}
 
@@ -73,7 +75,9 @@ public class Bob {
 	public boolean isLongJump() {
 		return longJump;
 	}
-
+	public BobState getLastState(){
+		return this.lastState;
+	}
 
 	public void setLongJump(boolean longJump) {
 		this.longJump = longJump;

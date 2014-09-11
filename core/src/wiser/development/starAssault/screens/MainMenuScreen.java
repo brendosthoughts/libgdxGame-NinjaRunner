@@ -35,14 +35,14 @@ public class MainMenuScreen implements Screen{
 	Rectangle helpBounds;
 	Vector3 touchPoint;
 	Rectangle levelsBounds;
-   Rectangle levelSelectBounds[];
-   String levelNum;
-   TextButton button;
-   TextButtonStyle textButtonStyle;
-   BitmapFont font;
-   Skin skin;
-   TextureAtlas buttonAtlas;
-	
+	Rectangle levelSelectBounds[];
+	String levelNum;
+	TextButton button;
+	TextButtonStyle textButtonStyle;
+	BitmapFont font;
+	Skin skin;
+	TextureAtlas buttonAtlas;
+
 	int levelSelect, i, j;
 
 	public MainMenuScreen (Game game) {
@@ -59,6 +59,7 @@ public class MainMenuScreen implements Screen{
 	}
 
 	public void update () {
+		Settings.load();
 		if (Gdx.input.justTouched()) {
 			guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
 
@@ -68,22 +69,22 @@ public class MainMenuScreen implements Screen{
 					if(levelSelectBounds[z] != null){
 						if (levelSelectBounds[z].contains(touchPoint.x, touchPoint.y)) {
 							game.setScreen(new GameScreen(game, z));
-						
+
 						}
-						
-						
+
+
 					}
 				}
-				
+
 			}
 
 			if (soundBounds.contains(touchPoint.x, touchPoint.y)) {
-				/*Assets.playSound(Assets.clickSound);
+				Assets.playSound(Assets.clickSound);
 				Settings.soundEnabled = !Settings.soundEnabled;
 				if (Settings.soundEnabled)
 					Assets.music.play();
 				else
-					Assets.music.pause();*/
+					Assets.music.pause();
 			}
 		}
 	}
@@ -92,7 +93,7 @@ public class MainMenuScreen implements Screen{
 
 	public void draw () {
 		GL20 gl = Gdx.gl;
-		gl.glClearColor(1, 0, 0, 1);
+		gl.glClearColor(0,0,0, 1);
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		guiCam.update();
 		batcher.setProjectionMatrix(guiCam.combined);
@@ -102,20 +103,9 @@ public class MainMenuScreen implements Screen{
 
 		batcher.enableBlending();
 		batcher.begin();
-		batcher.draw(Assets.logo, CAMERA_WIDTH/8, 3*CAMERA_HEIGHT/5 , CAMERA_WIDTH*6/8, 2*CAMERA_HEIGHT/5);
-	//	batcher.draw(Settings.soundEnabled ? Assets.soundOn : Assets.soundOff, 0, 0, 1.5f, 1.5f);
-        font = new BitmapFont();
-        skin = new Skin();
-        buttonAtlas = new TextureAtlas(Gdx.files.internal("textures2/texture.pack"));
-        skin.addRegions(buttonAtlas);
-        textButtonStyle = new TextButtonStyle();
-        textButtonStyle.font = font;
-        textButtonStyle.up = skin.getDrawable("ghost-1");
-        textButtonStyle.down = skin.getDrawable("ninja-1");
-        //textButtonStyle.checked = skin.getDrawable("checked-button");
-        button = new TextButton("Button1", textButtonStyle);
-       // batcher.draw(button , 0, 0, 1.5f, 1.5f);
-        
+		batcher.draw(Assets.logo, 0, 3*CAMERA_HEIGHT/5 , CAMERA_WIDTH, 2*CAMERA_HEIGHT/5);
+	
+
 		int j=2;
 		int k=0;
 		levelSelectBounds= new Rectangle[Settings.levels+1];
@@ -123,7 +113,7 @@ public class MainMenuScreen implements Screen{
 			if(i>6){
 				j=1;
 				k=7;
-				
+
 			}
 			if(i>12){
 				j=1;
@@ -131,41 +121,47 @@ public class MainMenuScreen implements Screen{
 			}
 			if(i <= Settings.levelReached){
 				if (i == Settings.levelReached){
-					batcher.draw(Assets.logo, CAMERA_WIDTH*(i-k- 1) /6 , j*CAMERA_HEIGHT/5, CAMERA_WIDTH/7, CAMERA_HEIGHT/5 );		
+					batcher.draw(Assets.blockTexture, CAMERA_WIDTH*(i-k-1) /6 , j*CAMERA_HEIGHT/5, CAMERA_WIDTH/7, CAMERA_HEIGHT/5 );
+					batcher.enableBlending();
+					batcher.draw(Assets.playOverlay, CAMERA_WIDTH*(i-k- 1) /6 , j*CAMERA_HEIGHT/5, CAMERA_WIDTH/7, CAMERA_HEIGHT/5 );		
+					batcher.disableBlending();
 				}
 				else{
-				batcher.draw(Assets.blockTexture, CAMERA_WIDTH*(i-k-1) /6 , j*CAMERA_HEIGHT/5, CAMERA_WIDTH/7, CAMERA_HEIGHT/5 );
-					
-				
+					batcher.draw(Assets.blockTexture, CAMERA_WIDTH*(i-k-1) /6 , j*CAMERA_HEIGHT/5, CAMERA_WIDTH/7, CAMERA_HEIGHT/5 );
+
+
 				}
-				levelSelectBounds[i]= new Rectangle( CAMERA_WIDTH*(i-k-1) /6 , j*CAMERA_HEIGHT/5, CAMERA_WIDTH/7, CAMERA_HEIGHT/5 );
-	
+				levelSelectBounds[i]= new Rectangle( CAMERA_WIDTH*(i-k-1) /6 , (j)*CAMERA_HEIGHT/5, CAMERA_WIDTH/7, CAMERA_HEIGHT/5 );
+
 			}
 			else{
-				batcher.draw(Assets.arrow, CAMERA_WIDTH*(i-k-1) /6 , j*CAMERA_HEIGHT/5, CAMERA_WIDTH/7, CAMERA_HEIGHT/5 );
+				batcher.draw(Assets.blockTexture, CAMERA_WIDTH*(i-k-1) /6 , j*CAMERA_HEIGHT/5, CAMERA_WIDTH/7, CAMERA_HEIGHT/5 );
+				batcher.enableBlending();
+				batcher.draw(Assets.na, CAMERA_WIDTH*(i-k-1) /6 , j*CAMERA_HEIGHT/5, CAMERA_WIDTH/7, CAMERA_HEIGHT/5 );
+				batcher.disableBlending();
 				levelSelectBounds[i]=null;
 			}
-			
-	
+
+
 			levelNum= ""+ i;
-			Assets.font.setColor(0f, 0f, 0f, 1f);
-			Assets.font.setScale(0.05f, 0.05f);
-			Assets.font.draw(batcher, levelNum, CAMERA_WIDTH*(i-k-1) /6 , (j)*CAMERA_HEIGHT/5);
-			
+			batcher.enableBlending();
+			Assets.smallfont.setScale(0.1f, 0.1f);
+			Assets.smallfont.draw(batcher, levelNum, CAMERA_WIDTH*(i-k-0.75f) /6 , (j+0.5f)*CAMERA_HEIGHT/5);
+			batcher.disableBlending();
 		}	
-        
-		
+
+
 		batcher.end();
 
-		if (TimeUtils.nanoTime() - last > 2000000000) {
-			Gdx.app.log("SuperJumper",
-				"version: " + Gdx.app.getVersion() + ", memory: " + Gdx.app.getJavaHeap() + ", " + Gdx.app.getNativeHeap()
-					+ ", native orientation:" + Gdx.input.getNativeOrientation() + ", orientation: " + Gdx.input.getRotation()
-					+ ", accel: " + (int)Gdx.input.getAccelerometerX() + ", " + (int)Gdx.input.getAccelerometerY() + ", "
-					+ (int)Gdx.input.getAccelerometerZ() + ", apr: " + (int)Gdx.input.getAzimuth() + ", " + (int)Gdx.input.getPitch()
-					+ ", " + (int)Gdx.input.getRoll());
-			last = TimeUtils.nanoTime();
-		}
+//		if (TimeUtils.nanoTime() - last > 2000000000) {
+//			Gdx.app.log("SuperJumper",
+//					"version: " + Gdx.app.getVersion() + ", memory: " + Gdx.app.getJavaHeap() + ", " + Gdx.app.getNativeHeap()
+//					+ ", native orientation:" + Gdx.input.getNativeOrientation() + ", orientation: " + Gdx.input.getRotation()
+//					+ ", accel: " + (int)Gdx.input.getAccelerometerX() + ", " + (int)Gdx.input.getAccelerometerY() + ", "
+//					+ (int)Gdx.input.getAccelerometerZ() + ", apr: " + (int)Gdx.input.getAzimuth() + ", " + (int)Gdx.input.getPitch()
+//					+ ", " + (int)Gdx.input.getRoll());
+//			last = TimeUtils.nanoTime();
+//		}
 	}
 
 	@Override

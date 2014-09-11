@@ -5,6 +5,9 @@ import java.util.Iterator;
 
 import wiser.development.starAssault.model.Block;
 import wiser.development.starAssault.model.Bob;
+import wiser.development.starAssault.model.Platform;
+import wiser.development.starAssault.model.Platform.PlatformState;
+import wiser.development.starAssault.model.SpeedPad;
 import wiser.development.starAssault.model.Bob.BobState;
 import wiser.development.starAssault.model.Fire;
 import wiser.development.starAssault.model.FireBall;
@@ -34,9 +37,11 @@ public class ObjectController {
 	private GameScreen gameScreen;
 	private Bob bob;
 	private Array<Block> collidableBlocks = new Array<Block>();
-	private FireBall[][] fireBalls;
 	private ArrayList<NinjaStars> thrownStars= new ArrayList<NinjaStars>();
 	private Skeleton skeleton;
+	private ArrayList<FireBall>  fireBalls = new ArrayList<FireBall>();
+	private ArrayList<Platform> platforms = new ArrayList<Platform>();
+	private Rectangle platformDumbyBounds= new Rectangle();
 	
 	public ObjectController(World world, GameScreen playScreen) {
 		this.world = world;
@@ -47,40 +52,138 @@ public class ObjectController {
 	
 		
 	public void update(float delta) {
-		fireBalls= world.getLevel().getFireBalls();
-		for (int col =0; col <= world.getLevel().getWidth()-1 ; col++ ){
-			for (int row=0; row<= world.getLevel().getHeight()-1; row++){
-				if(fireBalls[col][row] !=null){
-				FireBall fireball = fireBalls[col][row]; 
+		controlFireballs(delta);
+	 	controlPlatforms(delta);
+		controlStars(delta);
+		//update speedpad for animations :) ... not a great place for this but not sure where is better
+		for (SpeedPad speedPad : world.getDrawableSpeedPads(
+				world.getLevel().getWidth(), world.getLevel().getHeight())) {
+			if(speedPad==null) continue;
+			speedPad.update(delta);
+		
+		}
+	}
+	private void controlPlatforms(float delta){
+		platforms= world.getLevel().getPlatforms();
+		Iterator<Platform> platformIt = platforms.iterator();
+		while(platformIt.hasNext()){
+			Platform platform = platformIt.next();
+			
+			
+				if(platform.getState().equals(PlatformState.LEFT)){
+					platform.getVelocity().scl(delta);
+					platform.setPosition(platform.getPosition().add(platform.getVelocity()));
+					platform.getVelocity().scl(1/delta);
+					if(platform.getPosition().x < platform.getInititalPosition().x -platform.getVariance() ){
+						platform.setState(PlatformState.RIGHT);
+						platform.setVelocity(new Vector2(platform.getSpeed(), 0));
+					}
+					
+					
+				}
+				if(platform.getState().equals(PlatformState.RIGHT)){
+					platform.getVelocity().scl(delta);
+					platform.setPosition(platform.getPosition().add(platform.getVelocity()));
+					platform.getVelocity().scl(1/delta);
+					if(platform.getPosition().x > platform.getInititalPosition().x + platform.getVariance() ){
+						platform.setState(PlatformState.LEFT);
+						platform.setVelocity(new Vector2(-platform.getSpeed(), 0) );
+						
+					}
+					
+				}
+				
+				
+				// this is used to grow demension of platform by 0.5f in each direction to pass to bobController 
+				//for the actual collision detection and handling
+				//platformDumbyBounds.set(platform.getBounds().x - 1f, platform.getBounds().y - 1f, platform.getBounds().width+2f, platform.getBounds().height+ 2f);
+				if(platform.getBounds().overlaps(bob.getBounds())){
+					BobController.collidedWithPlatform(platform);
+					
+				}else if(BobController.getPlatform()!= null){
+					
+					if(platform.getBounds().equals(BobController.getPlatform().getBounds())){
+						BobController.setPlatformNull();
+				
+					}
+				}
+		}
+	}
+	private void controlFireballs(float delta){
+		fireBalls = world.getLevel().getFireBalls();
+		Iterator<FireBall> fireballIt =  fireBalls.iterator();
+		while(fireballIt.hasNext())
+		{
+				FireBall fireball = fireballIt.next(); 
+				
 				fireball.getVelocity().scl(delta);
-					if(( fireball.getPosition().y <= fireball.getInititalPosition().y +2f)
-							&& (fireball.getPosition().y > fireball.getInititalPosition().y -2f )
+				 if(fireball.getState().equals(FireBallState.LEFT) ||fireball.getState().equals(FireBallState.RIGHT) ){
+					// fireball is moving right inside variance
+					if(fireball.getPosition().x <= fireball.getInititalPosition().x +fireball.getVariance() 
+							&& ( fireball.getPosition().x >= fireball.getInititalPosition().x -fireball.getVariance() )
+							&&fireball.getState().equals(FireBallState.RIGHT))
+					{
+						fireball.setPosition(fireball.getPosition().add(fireball.getVelocity()));
+					}
+					//fireball is moving left outside variance and therefore switch direction
+					else if((fireball.getPosition().x >= fireball.getInititalPosition().x +fireball.getVariance())
+							&& fireball.getState().equals(FireBallState.RIGHT) )
+					{
+						fireball.setState(FireBallState.LEFT);
+						fireball.setPosition(fireball.getPosition().sub(fireball.getVelocity()));		
+					}
+					//fireball is moving right and inside variance
+					else if(( fireball.getPosition().x <= fireball.getInititalPosition().x +fireball.getVariance())
+							&& ( fireball.getPosition().x >= fireball.getInititalPosition().x -fireball.getVariance() )
+							&& fireball.getState().equals(FireBallState.LEFT))
+					{			
+						fireball.setPosition(fireball.getPosition().sub(fireball.getVelocity()));						
+					}
+					//fireball is moving right and outside variance therefore switch direction
+					else if ((fireball.getPosition().x <= fireball.getInititalPosition().x -fireball.getVariance())
+							&& fireball.getState().equals(FireBallState.LEFT) )
+					{
+						fireball.setState(FireBallState.RIGHT);
+						fireball.setPosition(fireball.getPosition().add(fireball.getVelocity()));						
+					}
+//					else if(fireball.getVelocity().x==0){
+//						fireball.setPosition(fireball.getInititalPosition());
+//						fireball.setVelocity(new Vector2(fireball.getSpeed(), 0) );
+//						
+//					}
+					
+					// fireball moving up down 
+				}else{
+					if(( fireball.getPosition().y <= fireball.getInititalPosition().y + fireball.getVariance())
+							&& (fireball.getPosition().y > fireball.getInititalPosition().y - fireball.getVariance())
 							&& fireball.getState().equals(FireBallState.UP))
 					{
 						fireball.setPosition(fireball.getPosition().add(fireball.getVelocity()));
-					}else if( fireball.getPosition().y > fireball.getInititalPosition().y +2f)
+					}else if( fireball.getPosition().y > fireball.getInititalPosition().y +fireball.getVariance())
 					{
 						// change state 
 						fireball.setState(FireBallState.DOWN);
 						fireball.setPosition(fireball.getPosition().sub(fireball.getVelocity()));	
 						
-					}else if(( fireball.getPosition().y <= fireball.getInititalPosition().y +2f)
-							&& ( fireball.getPosition().y > fireball.getInititalPosition().y -2f )
+					}else if(( fireball.getPosition().y <= fireball.getInititalPosition().y +fireball.getVariance())
+							&& ( fireball.getPosition().y > fireball.getInititalPosition().y -fireball.getVariance() )
 							&& fireball.getState().equals(FireBallState.DOWN))
 					{			
 						fireball.setPosition(fireball.getPosition().sub(fireball.getVelocity()));						
-					}else if (fireball.getPosition().y < fireball.getInititalPosition().y -2f){
+					}else if (fireball.getPosition().y < fireball.getInititalPosition().y -fireball.getVariance()){
 						fireball.setState(FireBallState.UP);
 						fireball.setPosition(fireball.getPosition().add(fireball.getVelocity()));						
 					}
-				fireball.getVelocity().scl(1/delta);
 				}
-			}
+
+				fireball.getVelocity().scl(1/delta);
+				fireball.update(delta);
+				if(fireball.getBounds().overlaps(bob.getBounds())){
+					bob.setState(BobState.DEAD);
+					gameScreen.setGameState(GameState.GAME_OVER);
+					bob.getVelocity().x = 0;		bob.setState(BobState.DEAD);
+				}
 		}
-		
-	  controlStars(delta);
-		
-		
 	}
 	
 	private void controlStars(float delta ){
@@ -99,10 +202,9 @@ public class ObjectController {
 				
 			    skeleton = skel.next();
 			    if (star.getBounds().overlaps(skeleton.getBounds()) && !(skeleton.getState().equals(SkeletonState.DEAD))) {
-			    		skeleton.setState(SkeletonState.DEAD);	
-			    		skeleton.setVelocity(new Vector2(0,0));
+			    		
+			    		skeleton.setHealth(skeleton.getHealth()-1);	
 			    		starIt.remove();
-					//	world.getLevel().destroyThrowingStar(index);
 			    		
 			    }							
 			}

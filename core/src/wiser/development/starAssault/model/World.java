@@ -67,6 +67,37 @@ import com.badlogic.gdx.utils.Array;
 			}
 			return blocks;
 		}
+
+		public List<Climable> getDrawableClimable( int cameraWidth, int cameraHeight) {
+			int x = (int) (bob.getPosition().x - cameraWidth);
+			int y = (int) (bob.getPosition().y - cameraHeight);
+			if (x < 0) {
+				x = 0;
+			}
+			if (y < 0) {
+				y = 0;
+			}
+			int x2 = x + 2 * cameraWidth;
+			int y2 = y + 2 * cameraHeight;
+			if (x2 > level.getWidth()) {
+				x2 = level.getWidth() - 1;
+			}
+			if (y2 > level.getHeight()) {
+				y2 = level.getHeight() - 1;
+			}
+			
+			List<Climable> climables = new ArrayList<Climable>();
+			Climable climable;
+			for (int col = x; col <= x2; col++) {
+				for (int row = y; row <= y2; row++) {
+					climable = level.getClimables()[col][row];
+					if (climable != null) {
+						climables.add(climable);
+					}
+				}
+			}
+			return climables;
+		}
 	 // --------------------
 		public List<Spring> getDrawableSprings (int cameraWidth, int cameraHeight) {
 			int x = (int) (bob.getPosition().x - cameraWidth);
@@ -98,6 +129,36 @@ import com.badlogic.gdx.utils.Array;
 			}
 			return springs;
 		}
+		public List<SpeedPad> getDrawableSpeedPads (int cameraWidth, int cameraHeight) {
+			int x = (int) (bob.getPosition().x - cameraWidth);
+			int y = (int) (bob.getPosition().y - cameraHeight);
+			if (x < 0) {
+				x = 0;
+			}
+			if (y < 0) {
+				y = 0;
+			}
+			int x2 = x + 2 * cameraWidth;
+			int y2 = y + 2 * cameraHeight;
+			if (x2 > level.getWidth()) {
+				x2 = level.getWidth() - 1;
+			}
+			if (y2 > level.getHeight()) {
+				y2 = level.getHeight() - 1;
+			}
+			
+			List<SpeedPad> speedPads = new ArrayList<SpeedPad>();
+			SpeedPad speedPad;
+			for (int col = x; col <= x2; col++) {
+				for (int row = y; row <= y2; row++) {
+					speedPad= level.getSpeedPads()[col][row];
+					if (speedPad != null) {
+						speedPads.add(speedPad);
+					}
+				}
+			}
+			return speedPads;
+		}
 		public List<Fire> getDrawableFire( int cameraWidth, int cameraHeight) {
 			int x = (int) (bob.getPosition().x - cameraWidth);
 			int y = (int) (bob.getPosition().y - cameraHeight);
@@ -128,35 +189,11 @@ import com.badlogic.gdx.utils.Array;
 			}
 			return fires;
 		}
-		public List<FireBall> getDrawableFireBall( int cameraWidth, int cameraHeight) {
-			int x = (int) (bob.getPosition().x - cameraWidth);
-			int y = (int) (bob.getPosition().y - cameraHeight);
-			if (x < 0) {
-				x = 0;
-			}
-			if (y < 0) {
-				y = 0;
-			}
-			int x2 = x + 2 * cameraWidth;
-			int y2 = y + 2 * cameraHeight;
-			if (x2 > level.getWidth()) {
-				x2 = level.getWidth() - 1;
-			}
-			if (y2 > level.getHeight()) {
-				y2 = level.getHeight() - 1;
-			}
-			
-			List<FireBall> fireBalls = new ArrayList<FireBall>();
-			FireBall fireBall;
-			for (int col = x; col <= x2; col++) {
-				for (int row = y; row <= y2; row++) {
-					fireBall = level.getFireBalls()[col][row];
-					if (fireBall != null) {
-						fireBalls.add(fireBall);
-					}
-				}
-			}
-			return fireBalls;
+		public ArrayList<FireBall> getDrawableFireBall( int cameraWidth, int cameraHeight) {
+			return level.getFireBalls();
+		}
+		public ArrayList<Platform> getDrawablePlatforms( int cameraWidth, int cameraHeight) {
+			return level.getPlatforms();
 		}
 		public ArrayList<Skeleton> getDrawableSkeletons( int cameraWidth, int cameraHeight) {
 			return level.getSkeletons();
@@ -209,8 +246,8 @@ import com.badlogic.gdx.utils.Array;
 	 }
 
 	 private void createLevel(int levelNum) {
-			bob = new Bob(new Vector2(3,2));
 			level = new Level(levelNum);
+			bob = new Bob (level.getBobStart());
 		}
 
 	}

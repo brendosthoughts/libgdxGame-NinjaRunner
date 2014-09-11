@@ -25,7 +25,7 @@ public class SkeletonController {
 	
 	private static final float ACCELERATION 	= 3f;
 	private static final float MAX_VEL 	= 1f;
-
+	private static final float GRAVITY 	= -20f;
 	private World 	world;
 	private ArrayList<Skeleton> skeletons =new ArrayList<Skeleton>();
 	private GameScreen gameScreen;
@@ -59,9 +59,9 @@ public class SkeletonController {
 				skeleton.getVelocity().x=0;
 				skeleton.getAcceleration().x = 0;
 			}else{
-		    
+		
 				skeleton.getVelocity().scl(delta);
-				//skeleton.getAcceleration().y = Assets.GRAVITY;
+				skeleton.getAcceleration().y = Assets.GRAVITY;
 				moveSkeleton(skeleton, delta);
 				// apply acceleration to change velocity
 				skeleton.getVelocity().add(skeleton.getAcceleration().x, skeleton.getAcceleration().y);
@@ -75,7 +75,9 @@ public class SkeletonController {
 				}				
 				// checking collisions with the surrounding blocks depending on skeleton's velocity
 				checkCollisionWithObjects(delta, skeleton);
-			
+				if(skeleton.getHealth() ==0){
+					skeleton.setState(SkeletonState.DEAD);
+				}
 				// simply updates the state time
 				skeleton.update(delta);
 			}
@@ -86,49 +88,47 @@ public class SkeletonController {
 		
 	}
 	private void moveSkeleton(Skeleton skeleton, float delta){
-		SkeletonType type= skeleton.getSkeletonType();
-
-		switch (type){
-		case BACKFORTH:
+	
+		if(skeleton.isBackforth()){
 		/***the skeleton move back and forth from current position  2block in each direction***/
-			if(( skeleton.getPosition().x <= skeleton.getInitialPosition().x +2f)
-				&& (skeleton.getPosition().x > skeleton.getInitialPosition().x -2f )
+			if(( skeleton.getPosition().x <= skeleton.getInitialPosition().x + skeleton.getVariance() )
+				&& (skeleton.getPosition().x > skeleton.getInitialPosition().x -skeleton.getVariance() )
 				&& (skeleton.isFacingLeft()))
 			{
 				skeleton.setFacingLeft(true);
 				skeleton.getVelocity().x=0;
 				skeleton.getAcceleration().x = -ACCELERATION;
-			}else if( skeleton.getPosition().x > skeleton.getInitialPosition().x +2f)
+			}else if( skeleton.getPosition().x > skeleton.getInitialPosition().x +skeleton.getVariance())
 			{
 				skeleton.setFacingLeft(true);
 				skeleton.getVelocity().x=0;
 				skeleton.getAcceleration().x = -ACCELERATION;
 
-			}else if(( skeleton.getPosition().x <= skeleton.getInitialPosition().x +2f)
-				&& ( skeleton.getPosition().x > skeleton.getInitialPosition().x -2f )
-				&& !(skeleton.isFacingLeft()))
+			}else if(( skeleton.getPosition().x <= skeleton.getInitialPosition().x +skeleton.getVariance())
+				&& ( skeleton.getPosition().x > skeleton.getInitialPosition().x -skeleton.getVariance() )
+				&& (!skeleton.isFacingLeft()))
 			{			
 				skeleton.setFacingLeft(false);
 				skeleton.getVelocity().x=0;
 				skeleton.getAcceleration().x = ACCELERATION;
-			}else if (skeleton.getPosition().x < skeleton.getInitialPosition().x -2f){
+			}else if (skeleton.getPosition().x < skeleton.getInitialPosition().x -skeleton.getVariance()){
 				skeleton.setFacingLeft(false);
 				skeleton.getVelocity().x=0;
 				skeleton.getAcceleration().x = ACCELERATION;					
 			}
-		
-			break;
-		case LEFT: 
+	    }else if(skeleton.getVelocity().x>0){
+	    	//skeleton moving LEFT (not backforth)
+
+
 			skeleton.setFacingLeft(true);
 			skeleton.getVelocity().x=0;
 			skeleton.getAcceleration().x = -ACCELERATION;
-			break;	
-		case RIGHT: 
+
+		}else if(skeleton.getVelocity().x<0){
+			//skeleton moving RIGHT (not backforth)
 			skeleton.setFacingLeft(false);
 			skeleton.getVelocity().x=0;
 			skeleton.getAcceleration().x = ACCELERATION;
-			break;
-		default: 
 		}	
 		
 
@@ -142,7 +142,6 @@ public class SkeletonController {
 		Rectangle skeletonRect = rectPool.obtain();
 		// set the rectangle to skeleton's bounding box
 		skeletonRect.set(skeleton.getBounds().x, skeleton.getBounds().y, skeleton.getBounds().width, skeleton.getBounds().height);
-
 		// we first check the movement on the horizontal X axis
 		int startX, endX;
 		int startY = (int) skeleton.getBounds().y;
@@ -159,42 +158,12 @@ public class SkeletonController {
 		if(skeleton.getBounds().overlaps(bob.getBounds()) && !(skeleton.getState().equals(SkeletonState.DEAD)) ){
 			if(bob.getState().equals(BobState.PUNCHING)){
 				skeleton.setHealth(skeleton.getHealth() - 1);
-				if(skeleton.getHealth()==0){
-				skeleton.setState(SkeletonState.DEAD);
-				}
 			}else{
 				gameScreen.setGameState(GameState.GAME_OVER);
 				bob.setState(BobState.DEAD);
 				bob.getVelocity().x = 0;		
 	    	}
 		}
-		
-//		thrownStars=world.getLevel().getThrownStars();
-//		Iterator<NinjaStars> starIt =  thrownStars.iterator();
-//		int index=0;
-//		while(starIt.hasNext()){
-//			NinjaStars star= starIt.next();
-//			
-//			star.getVelocity().scl(delta);
-//		//	star.setPosition(star.getPosition().add(star.getVelocity()));
-//			
-//		
-//			    if (star.getBounds().overlaps(skeleton.getBounds()) ) {
-//			    		skeleton.setState(SkeletonState.DEAD);	
-//			    		skeleton.setVelocity(new Vector2(0,0));
-//			    		star.setPosition(new Vector2( 2,2));
-//						world.getLevel().destroyThrowingStar(index);
-//			    		
-//			    }	
-//			star.getVelocity().scl(1/delta);
-//		}
-//			for (Block block : collidableBlocks) {
-//				if (block == null) continue;
-//				if (star.getBounds().overlaps(block.getBounds())) {
-//					world.getLevel().destroyThrowingStar(index);
-//				}
-//			}
-
 		populateCollidableBlocks(startX, startY, endX, endY);
 
 		// simulate skeleton's movement on the X
@@ -242,9 +211,7 @@ public class SkeletonController {
 		
 		// update skeleton's position
 		skeleton.getPosition().add(skeleton.getVelocity());
-		skeleton.getBounds().x = skeleton.getPosition().x;
-		skeleton.getBounds().y = skeleton.getPosition().y;
-		
+	
 		// un-scale velocity (not in frame time)
 		skeleton.getVelocity().scl(1/delta);// this should be mul (TODO fix)
 

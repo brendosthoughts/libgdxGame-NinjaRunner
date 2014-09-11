@@ -2,6 +2,7 @@ package wiser.development.starAssault.screens;
 import wiser.development.starAssault.controller.BobController;
 import wiser.development.starAssault.controller.ObjectController;
 import wiser.development.starAssault.controller.SkeletonController;
+import wiser.development.starAssault.model.Bob.BobState;
 import wiser.development.starAssault.model.World;
 import wiser.development.starAssault.utils.Assets;
 import wiser.development.starAssault.view.WorldRenderer;
@@ -21,8 +22,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-
-
 public class GameScreen implements Screen, GestureListener, InputProcessor{
 
 	public enum GameState{
@@ -41,6 +40,8 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 	private int width, height;
 	SpriteBatch batcher;
 	public GameState gameState;
+	Rectangle nextLevelBounds;
+	Rectangle retryBounds;
 	Rectangle pauseBounds;
 	Rectangle resumeBounds;
 	Rectangle quitBounds;
@@ -51,7 +52,8 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 	String message;
 	int directionPointer= -1;
 	int actionPointer=-1;
-//	MyInputProcessor myInputController;
+	int levelNumber;
+	long time_on_screen;
 	
 	float down_x, down_y , initpos_y, initpos_x, initpan_x, initpan_y, delta_x, delta_y;
 
@@ -59,12 +61,15 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 	public GameScreen(Game game, int levelNum){
 		touchPoint = new Vector3();
 		this.game =game;
-		gameState=GameState.RUNNING;
+		gameState=GameState.READY;
 		this.cam = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT);
 		this.cam.position.set(0,0, 0);
 		this.cam.update();
-		
+		this.levelNumber=levelNum;
 		batcher = new SpriteBatch();
+		 nextLevelBounds= new Rectangle(this.cam.position.x + CAMERA_WIDTH/8  , this.cam.position.y- 3*CAMERA_HEIGHT/8, CAMERA_WIDTH/4 ,CAMERA_HEIGHT/5);
+		retryBounds= new Rectangle(this.cam.position.x - 3*CAMERA_WIDTH/8  , this.cam.position.y- 3*CAMERA_HEIGHT/8, CAMERA_WIDTH/4 ,CAMERA_HEIGHT/5);
+
 		pauseBounds = new Rectangle( this.cam.position.x +  CAMERA_WIDTH/2 -1f,this.cam.position.y+CAMERA_HEIGHT/2  -1f, 2f, 2f);
 		resumeBounds = new Rectangle( this.cam.position.x - CAMERA_WIDTH/2, this.cam.position.y , CAMERA_WIDTH, CAMERA_HEIGHT/2);
 		quitBounds = new Rectangle( this.cam.position.x -  CAMERA_WIDTH/2 ,this.cam.position.y -CAMERA_HEIGHT/2 ,CAMERA_WIDTH, CAMERA_HEIGHT/2);
@@ -82,7 +87,7 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
         im.addProcessor(this);
         
         Gdx.input.setInputProcessor(im);
-       	}
+     }
 	
 	
 
@@ -94,10 +99,10 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 		
 	}
 	public void update (float deltaTime) {
-
+		
 		switch (gameState) {
 		case READY:
-			//updateReady();
+			updateReady(deltaTime);
 			break;
 		case RUNNING:
 			updateRunning(deltaTime);
@@ -111,10 +116,23 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 		case GAME_OVER:
 			updateGameOver();
 			break;
+		default: updateReady(deltaTime);
 		}
 		this.cam.update();
 	}
-	
+	private void updateReady(float delta){
+		//reset ie release all controls in order to not continue anythingleft over from bob's previos life
+		controller.climbDownReleased();
+		controller.jumpReleased();
+		controller.climbReleased();
+		controller.punchReleased();
+		controller.throwReleased();
+		controller.leftReleased();
+		controller.rightReleased();
+		controller.getBob().setVelocity(new Vector2(0,0));
+		gameState= GameState.RUNNING;
+		
+	}
 	private void updatePaused() {
 		Gdx.gl.glClearColor(0.7f, 0.1f, 0.1f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -163,12 +181,12 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 	}
 	private void updateLevelEnd(){
 		if (Gdx.input.justTouched()) {
-			game.setScreen(new MainMenuScreen(game));
-		}		
+			game.setScreen(new LevelCompleteScreen(game, levelNumber));
+		}	
 	}
 	private void updateGameOver(){
-		if (Gdx.input.justTouched()) {
-			game.setScreen(new MainMenuScreen(game));
+		if ((time_on_screen + 40  <=  System.currentTimeMillis()) ||Gdx.input.justTouched()) {
+			game.setScreen(new GameOverScreen(game, levelNumber));
 		}		
 	}
 	
@@ -193,8 +211,9 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 		
 	}
 	private void presentLevelEnd() {
-		batcher.draw(Assets.logo, cam.position.x -CAMERA_WIDTH/2, cam.position.y -CAMERA_HEIGHT/4,CAMERA_WIDTH/2, 3*CAMERA_HEIGHT/4);
-		
+		batcher.enableBlending();
+		batcher.draw(Assets.levelComplete,  this.cam.position.x - 3*CAMERA_WIDTH/8  , this.cam.position.y, 3*CAMERA_WIDTH/4 ,2*CAMERA_HEIGHT/5);
+		batcher.disableBlending();
 	}
 
 	private void presentReady() {
@@ -204,23 +223,24 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 
 	private void presentRunning() {
 		batcher.draw(Assets.pause,  cam.position.x + CAMERA_WIDTH/2 -1f, cam.position.y +CAMERA_HEIGHT/2 -1f, 1f,1f);
-		batcher.draw(Assets.ninjaStars,  this.cam.position.x - CAMERA_WIDTH/2 +0.5f, this.cam.position.y +CAMERA_HEIGHT/2 -0.5f, 0.5f,0.5f);
-		numThrowingStars = ""+controller.getBob().getThrowingStars();
-		Assets.font.setColor(0f, 0f, 0f, 1f);
-		Assets.font.setScale(0.04f);
-		Assets.font.draw(batcher,numThrowingStars , cam.position.x - CAMERA_WIDTH/2 + 0.5f, cam.position.y +CAMERA_HEIGHT/2 -0.5f);
+		for(int i=0; i<=controller.getBob().getThrowingStars()-1; ++i){
+			batcher.draw(Assets.ninjaStars,  this.cam.position.x - CAMERA_WIDTH/2 +(0.5f*i) , this.cam.position.y +CAMERA_HEIGHT/2 -0.5f, 0.5f,0.5f);
+		}
+
 	}
 	private void presentPaused() {
-		batcher.draw(Assets.pauseMenu, cam.position.x -CAMERA_WIDTH/2, cam.position.y -CAMERA_HEIGHT/2,CAMERA_WIDTH, CAMERA_HEIGHT);
+		batcher.draw(Assets.pause, cam.position.x -CAMERA_WIDTH/2, cam.position.y -CAMERA_HEIGHT/2,CAMERA_WIDTH, CAMERA_HEIGHT);
 
 		
 	}
 
 	private void presentGameOver() {
-		batcher.draw(Assets.gameOver, cam.position.x -CAMERA_WIDTH/3, cam.position.y -CAMERA_HEIGHT/3, 2*CAMERA_WIDTH/3, 2*CAMERA_HEIGHT/3);
-		batcher.draw(Assets.arrow, 320 - 320/2, 240 -96, 160, 96) ;
-
-		
+		time_on_screen= System.currentTimeMillis();
+		controller.getBob().setState(BobState.DEAD);
+		batcher.enableBlending();
+		///replace this with Ninja has Reached his desmisetem.
+		batcher.draw(Assets.gameOver,this.cam.position.x - 3*CAMERA_WIDTH/8, cam.position.y , CAMERA_WIDTH*3 /4 , 2*CAMERA_HEIGHT/5 );
+		batcher.disableBlending();		
 	}
 
 	@Override
@@ -237,7 +257,7 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 	}
 @Override
 	public void resize(int width, int height) {
-		renderer.setSize(width, height);
+		//renderer.setSize(width, height);
 		this.width=width;
 		this.height=height;
 	}
@@ -250,7 +270,7 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 @Override
 	public void pause() {
 	//	if (gameState == gameState.RUNNING) gameState = gameState.PAUSED;
-	 	controller.setIdle();
+//	 	controller.setIdle();
 	}
 
 @Override
@@ -267,32 +287,43 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 
 @Override
 public boolean keyDown(int keycode) {
-	if (keycode == Keys.LEFT)
+	if (keycode==Keys.UP)
+		controller.climbPressed();
+	else if (keycode == Keys.DOWN)
+		controller.downPressed();
+	else if (keycode == Keys.LEFT)
 		controller.leftPressed();
-	if (keycode == Keys.RIGHT)
+	else if (keycode == Keys.RIGHT)
 		controller.rightPressed();
-	if (keycode == Keys.Z)
-		controller.jumpPressed();
-	if (keycode == Keys.C)
+	else if (keycode == Keys.Z){
+		controller.bobJump();
+	message="Jump was pressed";
+	Gdx.app.log("INFO", message);
+	}
+	else if (keycode == Keys.C)
 		controller.throwPressed();
-	if (keycode == Keys.X)
+	else if (keycode == Keys.X)
 		controller.punchPressed();
 	return true;
 }
 
 @Override
 public boolean keyUp(int keycode) {
-	if (keycode == Keys.LEFT)
+	if(keycode==Keys.UP){
+		controller.climbReleased();
+	}else if (keycode == Keys.DOWN)
+		controller.climbDownReleased();
+	else if (keycode == Keys.LEFT)
 		controller.leftReleased();
-	if (keycode == Keys.RIGHT)
+	else if (keycode == Keys.RIGHT)
 		controller.rightReleased();
-	if (keycode == Keys.Z)
+	else if (keycode == Keys.Z)
 		controller.jumpReleased();
-	if (keycode == Keys.X)
+	else if (keycode == Keys.X)
 		controller.punchReleased();
-	if (keycode == Keys.C)
+	else if (keycode == Keys.C)
 		controller.throwReleased();
-	if (keycode == Keys.D)
+	else if (keycode == Keys.D)
 		renderer.setDebug(!renderer.isDebug());
 	return true;
 }
@@ -317,7 +348,31 @@ public boolean fling(float velocityX, float velocityY, int button) {
 @Override
 public boolean touchDown(int x, int y, int pointer, int button) {
 
-return false;
+	if (x < width / 3 && y > height / 2) {
+		directionPointer= pointer;
+		if(x< width/6){		
+			controller.leftPressed();
+			message=" driection TOUCH DOWN POINTER IS: " + pointer  + "the action pointer -> " +actionPointer +"directionPointer->"+ directionPointer;
+			Gdx.app.log("INFO", message);	
+
+		}else{
+			controller.rightPressed();	
+			message=" direction TOUCH DOWN POINTER IS: " + pointer  + "the action pointer -> " +actionPointer +"directionPointer->"+ directionPointer;
+			Gdx.app.log("INFO", message);	
+		//	return true;
+			
+		}		
+		
+	}else{
+		actionPointer= pointer;
+		down_x=x;
+		down_y=y;
+		message= "Pointer value is" + actionPointer;
+	}
+
+	message="TOUCH DOWN POINTER IS: " + pointer  + "the action pointer -> " +actionPointer +"directionPointer->"+ directionPointer;
+	Gdx.app.log("INFO", message);	
+	return false;
 	
 }
 
@@ -328,7 +383,7 @@ public boolean touchUp(int x, int y, int pointer, int button) {
 		controller.leftReleased();
 		controller.rightReleased();	
 		directionPointer=-1;
-		return true;				
+		//return false;				
 	}
 	if (x < width / 3 && y > height / 2) {
 	
@@ -337,7 +392,7 @@ public boolean touchUp(int x, int y, int pointer, int button) {
 		directionPointer=-1;
 		message= "TOUCHUP pointer is ->"+ pointer + "actionPointer->"+ actionPointer + "directionPointer-> "+ directionPointer;
 		Gdx.app.log("INFO", message);
-			return true;				
+			//return true;				
 	}
 	
 	message= "touchUP was detected";
@@ -375,32 +430,7 @@ public boolean mouseMoved(int screenX, int screenY) {
 
 @Override
 public boolean touchDown(float x, float y, int pointer, int button) {
-	if (x < width / 3 && y > height / 2) {
-		directionPointer= pointer;
-		if(x< width/6){		
-			controller.leftPressed();
-			message=" driection TOUCH DOWN POINTER IS: " + pointer  + "the action pointer -> " +actionPointer +"directionPointer->"+ directionPointer;
-			Gdx.app.log("INFO", message);	
-
-			return true;
-		}else{
-			controller.rightPressed();	
-			message=" direction TOUCH DOWN POINTER IS: " + pointer  + "the action pointer -> " +actionPointer +"directionPointer->"+ directionPointer;
-			Gdx.app.log("INFO", message);	
-			return true;
-			
-		}		
-		
-	}else{
-		actionPointer= pointer;
-		down_x=x;
-		down_y=y;
-		message= "Pointer value is" + actionPointer;
-	}
-
-	message="TOUCH DOWN POINTER IS: " + pointer  + "the action pointer -> " +actionPointer +"directionPointer->"+ directionPointer;
-	Gdx.app.log("INFO", message);	
-	return false;
+return false;
 }
 
 @Override
@@ -412,7 +442,9 @@ public boolean tap(float x, float y, int count, int button) {
 		gameState = GameState.PAUSED;
 		return false;
 	}
-	// TODO Auto-generated method stub
+	if(x >width / 3 && y > height / 2){
+		controller.bobPunch();
+	}
 	return false;
 }
 
@@ -470,7 +502,7 @@ public boolean panStop(float x, float y, int pointer, int button) {
 	Gdx.app.log("INFO", message);
 	actionPointer=-1;
 	// TODO Auto-generated method stub
-	return true;
+	return false;
 }
 
 @Override

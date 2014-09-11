@@ -127,13 +127,13 @@
             <key>format</key>
             <integer>2</integer>
             <key>realTextureFileName</key>
-            <string>textures.png</string>
+            <string>main.png</string>
             <key>size</key>
             <string>{1024,256}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:9e01ded37842ad2b4cdc88b8b3c26dca$</string>
+            <string>$TexturePacker:SmartUpdate:b02c0f023fd447331be376fb55649295$</string>
             <key>textureFileName</key>
-            <string>textures.png</string>
+            <string>main.png</string>
         </dict>
     </dict>
 </plist>

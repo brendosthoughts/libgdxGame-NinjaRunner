@@ -9,11 +9,15 @@ import wiser.development.starAssault.model.Block;
 import wiser.development.starAssault.model.Bob;
 import wiser.development.starAssault.model.Block.BlockType;
 import wiser.development.starAssault.model.Bob.BobState;
+import wiser.development.starAssault.model.Climable;
 import wiser.development.starAssault.model.Fire;
 import wiser.development.starAssault.model.FireBall;
 import wiser.development.starAssault.model.NinjaStars;
+import wiser.development.starAssault.model.Platform;
 import wiser.development.starAssault.model.Skeleton;
 import wiser.development.starAssault.model.Skeleton.SkeletonState;
+import wiser.development.starAssault.model.SpeedPad;
+import wiser.development.starAssault.model.SpeedPad.SpeedPadType;
 import wiser.development.starAssault.model.Spring;
 import wiser.development.starAssault.model.World;
 import wiser.development.starAssault.screens.GameScreen;
@@ -27,7 +31,7 @@ import com.badlogic.gdx.utils.Pool;
 public class BobController {
 
 	enum Keys {
-		LEFT, RIGHT, JUMP, PUNCH, THROWSTAR
+		LEFT, RIGHT, JUMP, PUNCH, THROWSTAR, UP,DOWN
 	}
 	private static final long LONG_JUMP_PRESS 	= 150l;
 	private static final long MIN_THROW_TIME    = 500l;
@@ -36,23 +40,29 @@ public class BobController {
 	private static final float MAX_JUMP_SPEED	= 9f;
 	private static final float DAMP 			= 0.90f;
 	private static final float MAX_VEL 			= 4f;
+	private static final float CLIMBING_SPEED =0.08f;
 	private World 	world;
 	private Bob 	bob;
 	private GameScreen gameScreen;
 	private long 	throwTime;
 	private long	jumpPressedTime;
 	private boolean jumpingPressed;
-	private boolean punchingPressed;
+	private boolean punchingPressed; 
+	private boolean doubleJump=false;
+	private boolean onLadder_x=false;
+	private boolean onLadder_y=false;
 	private Array<Block> collidableBlocks = new Array<Block>();
 	private Array<Fire> collidableFires = new Array<Fire>(); 
-	private Array<FireBall> collidableFireBalls = new Array<FireBall>(); 
 	private Array<Spring> collidableSprings = new Array<Spring>(); 
-	private ArrayList<Skeleton> collidableSkeletons = new ArrayList<Skeleton>();
+	private Array<SpeedPad> collidableSpeedPads = new Array<SpeedPad>();
+	private Array<Climable> collidableClimbs = new Array<Climable>();
 	private Array<NinjaStars> collidableStars = new Array<NinjaStars>();
-	
+	private static Platform platform;
+
+	private boolean climbUp=false;
 	public Boolean grounded =false;
 
-	
+
 	private Pool<Rectangle> rectPool = new Pool<Rectangle>() {
 		@Override
 		protected Rectangle newObject() {
@@ -66,6 +76,8 @@ public class BobController {
 		keys.put(Keys.JUMP, false);
 		keys.put(Keys.PUNCH, false);
 		keys.put(Keys.THROWSTAR, false);
+		keys.put(Keys.UP, false);
+		keys.put(Keys.DOWN, false);
 	};
 
 	public BobController(World world, GameScreen playScreen) {
@@ -82,6 +94,10 @@ public class BobController {
 		keys.get(keys.put(Keys.LEFT, true));
 	}
 
+	public void downPressed() {
+		keys.get(keys.put(Keys.DOWN, true));
+	}
+
 	public void rightPressed() {
 		keys.get(keys.put(Keys.RIGHT, true));
 	}
@@ -92,7 +108,7 @@ public class BobController {
 	}
 
 	public void punchPressed() {
-	//	keys.get(keys.put(Keys.PUNCH, true));
+		//	keys.get(keys.put(Keys.PUNCH, true));
 		bobPunch();
 		punchingPressed=true;
 	}
@@ -100,7 +116,20 @@ public class BobController {
 		bobThrowStar();
 		//keys.get(keys.put(Keys.THROWSTAR, true));
 	}
-
+	public void climbPressed(){
+		keys.get(keys.put(Keys.UP, true));
+	}
+	public void climbDownPressed(){
+		keys.get(keys.put(Keys.DOWN, true));
+	}
+	public void climbDownReleased(){
+		keys.get(keys.put(Keys.DOWN, false));
+		bobStopClimb();
+	}
+	public void climbReleased(){
+		keys.get(keys.put(Keys.UP, false));
+		bobStopClimb();
+	}
 	public void leftReleased() {
 		keys.get(keys.put(Keys.LEFT, false));
 	}
@@ -111,50 +140,86 @@ public class BobController {
 
 	public void jumpReleased() {
 		keys.get(keys.put(Keys.JUMP, false));
-		jumpingPressed = false;
+		//jumpingPressed = false;
 	}
 
 	public void punchReleased() {
 		keys.get(keys.put(Keys.PUNCH, false));
-	//	bob.setState(State.IDLE);
+		//	bob.setState(State.IDLE);
 		punchingPressed=false;
 	}
 	public void throwReleased(){
 		keys.get(keys.put(Keys.THROWSTAR, false));
-		
+
 	}
-	public void setIdle(){
-		bob.setState(BobState.IDLE);
-	}
+	//	public void setIdle(){
+	//		bob.setState(BobState.IDLE);
+	//	}
 	/** The main update method **/
 	public void update(float delta) {
 		// Processing the input - setting the states of Bob
+	
+
 		processInput();
-		
+
 		// If Bob is grounded then reset the state to IDLE 
-		if (grounded && bob.getState().equals(BobState.JUMPING)) {
+		if (grounded && (bob.getState().equals(BobState.JUMPING) || bob.getState().equals(BobState.DOUBLEJUMP))){		
+			bob.setState(BobState.IDLE);
+		}
+		if(!onLadder_x && !onLadder_y && ( bob.getState().equals(BobState.IDLE_CLIMBING)||bob.getState().equals(BobState.CLIMBING))){
 			bob.setState(BobState.IDLE);
 		}
 
-		// Setting initial vertical acceleration 
-		bob.getAcceleration().y = GRAVITY;
-		
+		// Setting initial vertical acceleration
+		if(platform ==null){
+			bob.getAcceleration().y = GRAVITY;
+		}else{
+
+			bob.getAcceleration().y = 0;
+		}
 		// Convert acceleration to frame time
-		bob.getAcceleration().scl(delta); //this should be mul
-		
-		
-		checkCollisionWithObjects(delta);
-		
+		if(platform != null){
+
+			//bob.setVelocity(new Vector2(0,0));
+			if(bob.getVelocity().y>=0 &&(bob.getState().equals(BobState.JUMPING) || bob.getState().equals(BobState.DOUBLEJUMP)) && bob.getPosition().y <= platform.getBounds().y+ (3*platform.getBounds().height/4)){
+				bob.getVelocity().y=0;
+				bob.setPosition(new Vector2(bob.getPosition().x, bob.getPosition().y -0.1f));
+			//	bob.getAcceleration().y=GRAVITY;
+			}else if((bob.getPosition().x <= platform.getBounds().x &&(bob.getPosition().y <=platform.getBounds().y+platform.getBounds().height))){
+				bob.getVelocity().x=0;
+				bob.setPosition(new Vector2(bob.getPosition().x -0.3f, bob.getPosition().y));
+			}else if( bob.getPosition().x >= platform.getBounds().x + platform.getBounds().width &&(bob.getPosition().y <=platform.getBounds().y+platform.getBounds().height)){
+				bob.getVelocity().x=0;
+				bob.setPosition(new Vector2(bob.getPosition().x +0.3f, bob.getPosition().y));
+			}else{
+				grounded=true;
+				bob.setPosition(new Vector2(bob.getPosition().x, platform.getPosition().y + platform.getBounds().height));
+				if(bob.getState().equals(BobState.WALKING)){
+					if(bob.isFacingLeft()){
+						bob.setVelocity(new Vector2(platform.getVelocity().x - (2f), platform.getVelocity().y));
+					}else{
+						bob.setVelocity(new Vector2(platform.getVelocity().x + (2f) , platform.getVelocity().y));
+					}
+				}else if(bob.getState().equals(BobState.JUMPING)){
+					bobJump();
+				}else{
+					bob.setVelocity(new Vector2(platform.getVelocity().x , platform.getVelocity().y));
+				}
+			}
+
+		}
+		bob.getAcceleration().scl(delta);
 		// apply acceleration to change velocity
 		bob.getVelocity().add(bob.getAcceleration().x, bob.getAcceleration().y);
 
 		// checking collisions with the surrounding blocks depending on Bob's velocity
 
 
-
-		// apply damping to halt Bob nicely 
+		bob.getAcceleration().scl(1/delta);
+		//  apply damping to halt Bob nicely
+		checkCollisionWithObjects(delta);
 		bob.getVelocity().x *= DAMP;
-		
+
 		// ensure terminal velocity is not exceeded
 		if (bob.getVelocity().x > MAX_VEL) {
 			bob.getVelocity().x = MAX_VEL;
@@ -166,9 +231,12 @@ public class BobController {
 		if((bob.getPosition().x >=world.getLevel().getFinish().x) &&(bob.getPosition().y >= world.getLevel().getFinish().y)){
 			gameScreen.setGameState(GameState.LEVEL_END);
 		}
+		
+
+
 		// simply updates the state time
 		bob.update(delta);
-		
+
 
 	}
 
@@ -194,32 +262,51 @@ public class BobController {
 			startX = endX = (int) Math.floor(bob.getBounds().x + bob.getBounds().width + bob.getVelocity().x);
 		}
 
-		// get the block(s) bob can collide with
+		// get the things bob can collide with
 		populateColidableObjects(startX, startY, endX, endY);
-	
+
 
 		// simulate bob's movement on the X
 		bobRect.x += bob.getVelocity().x;
+
 		
 
-
 		// clear collision boxes in world
-		world.getCollisionRects().clear();
+
 
 		// if bob collides, make his horizontal velocity 0
+
 		for (Block block : collidableBlocks) {
 			if (block == null) continue;
-			if (bobRect.overlaps(block.getBounds())) {
+			if (bobRect.overlaps(block.getBounds())) {		
 				bob.getVelocity().x = 0;
 				world.getCollisionRects().add(block.getBounds());
-				if(block.getType().equals(BlockType.SPIKE)){
+				if(block.getType().equals(BlockType.SPIKE) || block.getType().equals(BlockType.SPIKE_TOP) ){
 					bob.setState(BobState.DEAD);
 					gameScreen.setGameState(GameState.GAME_OVER);
 				}
-				break;
 			}
 		}
-		
+		for (Climable climable: collidableClimbs){
+			if(climable!=null){
+				if(bobRect.overlaps(climable.getBounds())){
+					onLadder_x=true;
+					if(bob.getState().equals(BobState.CLIMBING) && climbUp){
+						bob.getVelocity().y=CLIMBING_SPEED;
+					}
+					else if(bob.getState().equals(BobState.CLIMBING) && !climbUp){
+						bob.getVelocity().y = -CLIMBING_SPEED;
+					}
+					else if(bob.getLastState().equals(BobState.CLIMBING) || bob.getState().equals(BobState.CLIMBING) || bob.getState().equals(BobState.IDLE_CLIMBING) ){
+						bob.getVelocity().y=0;
+
+					}
+					break;
+				}
+			}else{
+				onLadder_x=false;
+			}
+		}
 		for(NinjaStars ninja_star: collidableStars ){
 			if(ninja_star != null){
 				if(bobRect.overlaps(ninja_star.getBounds())){
@@ -229,7 +316,20 @@ public class BobController {
 			}
 		}
 
+		for (SpeedPad speedPad: collidableSpeedPads){
+
+			if (speedPad == null) continue;
+			if (bob.getBounds().overlaps(speedPad.getBounds())) {
+				if(speedPad.getType().equals(SpeedPadType.RIGHT)){
+					bob.getVelocity().x += 3f;
+				}else if (speedPad.getType().equals(SpeedPadType.LEFT)){
+					bob.getVelocity().x -= 3f;					
+				}
+			}
+		}
+
 		for (Fire fire: collidableFires){
+
 			if (fire == null) continue;
 			if (bob.getBounds().overlaps(fire.getBounds())) {
 				gameScreen.setGameState(GameState.GAME_OVER);
@@ -237,36 +337,9 @@ public class BobController {
 				bob.getVelocity().y = 0;
 			}
 		}
-		for (FireBall fireBall: collidableFireBalls){
-			if (fireBall == null) continue;
-			if (bob.getBounds().overlaps(fireBall.getBounds())) {
-				gameScreen.setGameState(GameState.GAME_OVER);
-				bob.setState(BobState.DEAD);
-				bob.getVelocity().y = 0;
-			}
-		}
-		// while loop searches for collisions with skeletons (skeleton controller kills bob non vice versa)
-		Iterator<Skeleton> xIt =  collidableSkeletons.iterator();
-		while(xIt.hasNext())
-		{
-		    Skeleton skeleton = xIt.next();
-
-		    if (bobRect.overlaps(skeleton.getBounds()) ) {
-
-		    	if(bob.getState().equals(BobState.PUNCHING)){
-		    		skeleton.setState(SkeletonState.DEAD);
-		    	}else{
-		    		gameScreen.setGameState(GameState.GAME_OVER);
-		    		bob.setState(BobState.DEAD);
-		    		bob.getVelocity().x = 0;	
-		    	}			
-		    }			
-		
-			
-		}
-		
+		world.getCollisionRects().clear();
 		// check collision of ninjaStar's (thrownstars) bob has thrown
-	
+
 		// reset the x position of the collision box
 		bobRect.x = bob.getPosition().x;
 
@@ -278,31 +351,42 @@ public class BobController {
 		} else {
 			startY = endY = (int) Math.floor(bob.getBounds().y + bob.getBounds().height + bob.getVelocity().y);
 		}
-		
+
 		populateColidableObjects(startX, startY, endX, endY);
 		bobRect.y += bob.getVelocity().y;
 
 		for (Block block : collidableBlocks) {
 			if (block == null) continue;
-			if (bobRect.overlaps(block.getBounds())) {
-				if (bob.getVelocity().y < 0) {
-					grounded = true;
-				}
-				if(block.getType().equals(BlockType.SPIKE)){
+			if (bobRect.overlaps(block.getBounds())) {	
+
+				if((block.getType().equals(BlockType.SPIKE)) || (block.getType().equals(BlockType.SPIKE_TOP)) ){
 					bob.setState(BobState.DEAD);
 					gameScreen.setGameState(GameState.GAME_OVER);
 				}
+				grounded = true;
+				doubleJump=false;
 				bob.getVelocity().y = 0;
-				world.getCollisionRects().add(block.getBounds());
-				break;
+
 			}
 		}
-		for (FireBall fireBall: collidableFireBalls){
-			if (fireBall == null) continue;
-			if (bob.getBounds().overlaps(fireBall.getBounds())) {
-				gameScreen.setGameState(GameState.GAME_OVER);
-				bob.setState(BobState.DEAD);
-				bob.getVelocity().y = 0;
+		for (Climable climable: collidableClimbs){
+			if(climable!=null){
+				if(bobRect.overlaps(climable.getBounds())){
+					onLadder_y=true;
+					if(bob.getState().equals(BobState.CLIMBING) && climbUp){
+						bob.getVelocity().y=CLIMBING_SPEED;
+					}
+					else if(bob.getState().equals(BobState.CLIMBING) && !climbUp){
+						bob.getVelocity().y = -CLIMBING_SPEED;
+					}else if(bob.getLastState().equals(BobState.CLIMBING) || bob.getState().equals(BobState.CLIMBING) || bob.getState().equals(BobState.IDLE_CLIMBING) ){
+						bob.getVelocity().y=0;
+
+					}
+					break;
+				}
+
+			}else{
+				onLadder_y=false;
 			}
 		}
 		for(NinjaStars ninja_star: collidableStars ){
@@ -313,6 +397,18 @@ public class BobController {
 				}
 			}
 		}
+		for (SpeedPad speedPad: collidableSpeedPads){
+
+			if (speedPad == null) continue;
+			if (bob.getBounds().overlaps(speedPad.getBounds())) {
+				if(speedPad.getType().equals(SpeedPadType.RIGHT)){
+					bob.getVelocity().x += 3f;
+				}else if (speedPad.getType().equals(SpeedPadType.LEFT)){
+					bob.getVelocity().x -= 3f;					
+				}
+			}
+
+		}
 		for (Fire fire: collidableFires){
 			if (fire == null) continue;
 			if (bob.getBounds().overlaps(fire.getBounds())) {
@@ -321,30 +417,17 @@ public class BobController {
 				bob.getVelocity().y = 0;
 			}
 		}
-		if(bob.getState().equals(BobState.JUMPING)){
+		if(bob.getState().equals(BobState.JUMPING) || bob.getState().equals(BobState.DOUBLEJUMP) ){
 			for (Spring spring: collidableSprings){
 				if (spring == null) continue;
 				if (bob.getBounds().overlaps(spring.getBounds())) {
-					
+
 					bob.getVelocity().y = 0.3f;
-				//	grounded= false;
+					//	grounded= false;
 				}
 			}
 		}
-		Iterator<Skeleton> yIt =  collidableSkeletons.iterator();
-		while(yIt.hasNext())
-		{
-		    Skeleton skeleton = yIt.next();
-		    if (bob.getBounds().overlaps(skeleton.getBounds()) ) {
-		    		gameScreen.setGameState(GameState.GAME_OVER);
-		    		bob.setState(BobState.DEAD);
-		    		bob.getVelocity().x = 0;			    				
-		    }					
-		}
-	//	if(bob.getState().equals(BobState.JUMPING)){
 
-			//TODO test against springs if bob in air and over spring comppress spring shoot bob , uncompress spring
-		//}
 		// reset the collision box's position on Y
 		bobRect.y = bob.getPosition().y;
 
@@ -354,159 +437,163 @@ public class BobController {
 		bob.getBounds().y = bob.getPosition().y;
 		
 
+
 		// un-scale velocity (not in frame time)
 		bob.getVelocity().scl(1/delta);// this should be mul (TODO fix)
 
 	}
 
- /// finds anything bob can collide with other then enemies as they are stored differently;
+	/// finds anything bob can collide with other then enemies as they are stored differently;
 	public void populateColidableObjects(int startX, int startY, int endX, int endY) {
 		collidableBlocks.clear();
 		collidableFires.clear();
 		collidableStars.clear();
 		collidableSprings.clear();
-		collidableFireBalls.clear();
-		//collidableSkeletons.clear();
-		for (int x = startX; x <= endX; x++) {
+		collidableSpeedPads.clear();
+		collidableClimbs.clear();
+
+		for (int x = startX; x <= endX; x++) { // NEED to make some type of dynamic grabbing of fireball like skeletons (basicaly all moving objects)
 			for (int y = startY; y <= endY; y++) {
 				if (x >= 0 && x < world.getLevel().getWidth() && y >=0 && y < world.getLevel().getHeight()) {
 					collidableBlocks.add(world.getLevel().getCollidableBlocks(x, y));
 					collidableFires.add(world.getLevel().getCollidableFires(x, y));
 					collidableStars.add(world.getLevel().getCollidableStars(x, y));
 					collidableSprings.add(world.getLevel().getCollidableSprings(x, y));
-					collidableFireBalls.add(world.getLevel().getCollidableFireBalls(x, y));
-					
+					collidableSpeedPads.add(world.getLevel().getCollidableSpeedPads(x, y));
+					collidableClimbs.add(world.getLevel().getColliableClimbs(x,y));
+
 				}
 			}
 		}
-		//collidableSkeletons=world.getLevel().getSkeletons();
-		
 	}
-	
-	
 
 
-	
-	
+
+
+
+
 
 	/** Change Bob's state and parameters based on input controls **/
-	private void processInput() {
-		if (keys.get(Keys.JUMP)) {
-			/*if (!bob.getState().equals(BobState.JUMPING)) {
-				jumpingPressed = true;
-				jumpPressedTime = System.currentTimeMillis();
-				bob.setState(BobState.JUMPING);
-				bob.getVelocity().y = MAX_JUMP_SPEED; 
-				grounded = false;
+	private void processInput() {		
 
-			} else {
-				if (jumpingPressed && ((System.currentTimeMillis() - jumpPressedTime) >= LONG_JUMP_PRESS)) {
-					jumpingPressed = false;
-				} else {
-					if (jumpingPressed) {
-						bob.getVelocity().y = MAX_JUMP_SPEED;
-					}
-				}
-			}*/
-		}
-		if (keys.get(Keys.PUNCH)) {
-			/// punch is pressed
-		/*	if(!bob.getState().equals(BobState.JUMPING)){
-			punchingPressed = true;
-			bob.setState(BobState.PUNCHING);  
-			}*/
-		}
-		if (keys.get(Keys.THROWSTAR ) && (bob.getThrowingStars() > 0)){
-		// make the throwing star , and give it a velocity and add it to a arraylist of throwing stars, 
-		// in collision checking stars will be checked to see if hit something , if so they disapear
-
-//				if(bob.canThrow()){
-//					throwTime= System.currentTimeMillis();
-//					bob.setState(BobState.THROW);
-//					bob.setThrowingStars(bob.getThrowingStars() -1);
-//					
-//					if(bob.isFacingLeft()){
-//					world.getLevel().addThrowingStar(bob.getPosition(), new Vector2(-6,0));
-//					}else{
-//					world.getLevel().addThrowingStar(bob.getPosition(), new Vector2(6,0));	
-//					}	
-//					bob.setCanThrow(false);
-//				}
-//				else if ((System.currentTimeMillis() - throwTime >= MIN_THROW_TIME)){
-//					bob.setCanThrow(true);
-//				} 
-				
-		}
-			
-		
 		if (keys.get(Keys.LEFT)) {
 			// left is pressed
 			bob.setFacingLeft(true);
-			if (!bob.getState().equals(BobState.JUMPING )&& !bob.getState().equals(BobState.PUNCHING)) {
-				bob.setState(BobState.WALKING);
+			//TODO lookup xor in java piece of logic I have been really missing
+			if (!bob.getState().equals(BobState.JUMPING ) && !bob.getState().equals(BobState.PUNCHING)
+					&& !bob.getState().equals(BobState.IDLE_CLIMBING)&& !bob.getState().equals(BobState.CLIMBING)) {
+				if(!bob.getState().equals(BobState.DOUBLEJUMP) ){
+					bob.setState(BobState.WALKING);
+				}
 			}
 			bob.getAcceleration().x = -ACCELERATION;
 		} else if (keys.get(Keys.RIGHT)) {
 			// left is pressed
 			bob.setFacingLeft(false);
-			if (!bob.getState().equals(BobState.JUMPING)&& !bob.getState().equals(BobState.PUNCHING)) {
-				bob.setState(BobState.WALKING);
+			if (!bob.getState().equals(BobState.JUMPING)&& !bob.getState().equals(BobState.PUNCHING) 
+					&& !bob.getState().equals(BobState.IDLE_CLIMBING)&& !bob.getState().equals(BobState.CLIMBING) ) {
+				if(!bob.getState().equals(BobState.DOUBLEJUMP) ){
+					bob.setState(BobState.WALKING);
+				}
 			}
 			bob.getAcceleration().x = ACCELERATION;
-			
-			
-		}else {
-			if (!bob.getState().equals(BobState.JUMPING) && !bob.getState().equals(BobState.PUNCHING)) {
+
+		}else if (keys.get(Keys.UP)){
+			bobClimb();
+		}else if (keys.get(Keys.DOWN)){
+			bobClimbDown();
+		}
+		else {
+			if (bob.getState().equals(BobState.CLIMBING)){
+				bob.setState(BobState.IDLE_CLIMBING);
+				bob.setVelocity(new Vector2(0,0));
+			}
+			else if (!bob.getState().equals(BobState.JUMPING) && !bob.getState().equals(BobState.PUNCHING) &&
+					!bob.getState().equals(BobState.DOUBLEJUMP) && !bob.getState().equals(BobState.CLIMBING)
+					&& !bob.getState().equals(BobState.IDLE_CLIMBING)) {
 				bob.setState(BobState.IDLE);
 			}
 			bob.getAcceleration().x = 0;
-			
 		}
-	
 	}
 	public void bobJump(){
-		if (!bob.getState().equals(BobState.JUMPING) ) {
+		platform=null;
+		if((grounded ==false) && bob.getState().equals(BobState.JUMPING) && jumpingPressed==true && doubleJump==false && bob.getVelocity().y!=0){
+			bob.setState(BobState.DOUBLEJUMP);
+			doubleJump=true;
+			if(bob.getVelocity().y<0){
+				bob.getVelocity().y = MAX_JUMP_SPEED;	
+			}else{
+				bob.getVelocity().y += MAX_JUMP_SPEED;	
+			}
+
+
+		}else if ((!bob.getState().equals(BobState.JUMPING) && !bob.getState().equals(BobState.DOUBLEJUMP)  && grounded==true)|| bob.getState().equals(BobState.CLIMBING)|| bob.getState().equals(BobState.IDLE_CLIMBING)){
+			doubleJump=false;
 			jumpingPressed = true;
-			jumpPressedTime = System.currentTimeMillis();
 			bob.setState(BobState.JUMPING);
 			bob.getVelocity().y = MAX_JUMP_SPEED; 
 			grounded = false;
-
-		} 
-		if (jumpingPressed && ((System.currentTimeMillis() - jumpPressedTime) >= LONG_JUMP_PRESS)) {
-				jumpingPressed = false;
-		} else {
-			if (jumpingPressed) {
-				bob.getVelocity().y = MAX_JUMP_SPEED;
-			}
-		}
-		
+		} 	
 	}
+	public void bobClimb(){
+		if(onLadder_x || onLadder_y){
+			bob.setState(BobState.CLIMBING);
+			climbUp=true;
+		}
+
+	}
+	public void bobStopClimb(){
+		if(onLadder_x || onLadder_y){
+			bob.setState(BobState.IDLE_CLIMBING);
+		}
+	}
+	public void bobClimbDown(){
+		if(onLadder_x || onLadder_y){
+			bob.setState(BobState.CLIMBING);
+			climbUp=false;
+		}
+
+	}	
+
 	public void bobThrowStar(){
 		if(bob.canThrow() && bob.getThrowingStars() > 0){
 			throwTime= System.currentTimeMillis();
 			bob.setState(BobState.THROW);
 			bob.setThrowingStars(bob.getThrowingStars() -1);
-			
+
 			if(bob.isFacingLeft()){
-			world.getLevel().addThrowingStar(bob.getPosition(), new Vector2(-6,0));
+				world.getLevel().addThrowingStar(bob.getPosition(), new Vector2(-6,0));
 			}else{
-			world.getLevel().addThrowingStar(bob.getPosition(), new Vector2(6,0));	
+				world.getLevel().addThrowingStar(bob.getPosition(), new Vector2(6,0));	
 			}	
 			bob.setCanThrow(false);
 		}
 		else if ((System.currentTimeMillis() - throwTime >= MIN_THROW_TIME)){
 			bob.setCanThrow(true);
 		} 
-		
+
 	}
 	public void bobPunch(){
 		if(!bob.getState().equals(BobState.JUMPING)){
 			punchingPressed = true;
 			bob.setState(BobState.PUNCHING);  
-			}		
+		}		
 	}
 	public Bob getBob(){
 		return bob;
 	}
+	public static void collidedWithPlatform(Platform bobsPlatform){
+		platform=bobsPlatform;				
+	}
+
+	public static void setPlatformNull() {
+		platform=null;
+		
+	}
+
+	public static Platform getPlatform() {
+		return platform;
+	}
+	
 }
