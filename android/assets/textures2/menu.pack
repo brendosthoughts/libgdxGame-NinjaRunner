@@ -1,0 +1,95 @@
+menu.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+continue-playing
+  rotate: false
+  xy: 2, 2
+  size: 319, 115
+  orig: 319, 115
+  offset: 0, 0
+  index: -1
+logo
+  rotate: false
+  xy: 2, 197
+  size: 600, 100
+  orig: 600, 100
+  offset: 0, 0
+  index: -1
+retry
+  rotate: false
+  xy: 573, 299
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+menu
+  rotate: false
+  xy: 604, 197
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+play
+  rotate: false
+  xy: 471, 299
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+sound-on
+  rotate: false
+  xy: 716, 299
+  size: 67, 54
+  orig: 67, 54
+  offset: 0, 0
+  index: -1
+levelComplete
+  rotate: false
+  xy: 2, 119
+  size: 453, 76
+  orig: 453, 76
+  offset: 0, 0
+  index: -1
+nextlevel
+  rotate: false
+  xy: 2, 299
+  size: 326, 60
+  orig: 326, 60
+  offset: 0, 0
+  index: -1
+sound-off
+  rotate: false
+  xy: 675, 299
+  size: 39, 53
+  orig: 39, 53
+  offset: 0, 0
+  index: -1
+gameover
+  rotate: false
+  xy: 323, 2
+  size: 322, 51
+  orig: 322, 51
+  offset: 0, 0
+  index: -1
+play-overlay
+  rotate: false
+  xy: 369, 299
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+na
+  rotate: false
+  xy: 706, 197
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+pause
+  rotate: false
+  xy: 330, 299
+  size: 37, 48
+  orig: 37, 48
+  offset: 0, 0
+  index: -1
