@@ -57,6 +57,7 @@ public class WorldRenderer {
 	private float doubleJumpDraws=0;
 	private TextureRegion speedPadFrame;
 	private TextureRegion fireballFrame;
+	private TextureRegion fireFrame;
 	float s_width,s_height;
 	float stateTime;
 	float dif;
@@ -161,7 +162,9 @@ public class WorldRenderer {
 	private void drawFire() {
 		for (Fire fire : world.getDrawableFire((int) this.cam.viewportWidth,
 				(int) this.cam.viewportHeight)) {
-			spriteBatch.draw(Assets.fireTexture, fire.getPosition().x,
+			fireFrame = Assets.fireAnimation.getKeyFrame(
+					fire.getStateTime(), true);
+			spriteBatch.draw(fireFrame, fire.getPosition().x,
 					fire.getPosition().y, Fire.SIZE, Fire.SIZE);
 		}
 	}
@@ -213,6 +216,16 @@ public class WorldRenderer {
 						.draw(Assets.spikeTopTexture, block.getPosition().x,
 								block.getPosition().y, Block.SIZE,
 								Block.SIZE);
+			}else if (block.getType().equals(BlockType.SPIKE_LEFT)) {
+				spriteBatch
+				.draw(Assets.spikeLeftTexture, block.getPosition().x,
+						block.getPosition().y, Block.SIZE,
+						Block.SIZE);
+			}else if (block.getType().equals(BlockType.SPIKE_RIGHT)) {
+		spriteBatch
+		.draw(Assets.spikeRightTexture, block.getPosition().x,
+				block.getPosition().y, Block.SIZE,
+				Block.SIZE);
 			}
 		}
 	}
@@ -428,5 +441,10 @@ public class WorldRenderer {
 		}
 		debugRenderer.end();
 
+	}
+// background color of the level 
+	public float[] getLevelColor() {
+		return world.getLevel().getLevelColor();
+	
 	}
 }

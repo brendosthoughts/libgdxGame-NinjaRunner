@@ -10,7 +10,7 @@ public class StarAssault extends Game {
 
  @Override
  public void create() {
-	 Settings.save();
+	
 	 Settings.load();
 		Assets.load();
   setScreen(new MainMenuScreen(this));

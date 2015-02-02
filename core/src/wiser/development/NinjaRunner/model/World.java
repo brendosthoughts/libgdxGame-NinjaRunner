@@ -26,7 +26,7 @@ import com.badlogic.gdx.utils.Array;
 		Array<Rectangle> collisionRects = new Array<Rectangle>();
 		private Vector2 testPosition;
 		private Boolean isSafe=false;
-	
+	private Vector2 best; /// this variable is used for reviveing bob and is distance from death position to revive 
 	 // Getters -----------
 	 
 	public Array<Rectangle> getCollisionRects() {
@@ -257,33 +257,53 @@ import com.badlogic.gdx.utils.Array;
 		}
 	 // used to find a safe place to revive bob... takes where he died as a position return where he will be revived
 	public Vector2 findSafePlace(int levleNum) {
-		float bestReviveDist= 1000f; /// arbitrarily large neumber to start so that something in conditions below is automatically closer	
-		float bestCurrentDist= 1000f; /// arbitrarily large neumber to start so that something in conditions below is automatically closer	
+		Vector2 bestDist= new Vector2(100,100);
+		/// arbitrarily large neumber to start so that something in conditions below is automatically closer	
+		Vector2 bestPos = level.getBobStart();
 		Rectangle cleanZone = new Rectangle();
+		Block testBlock =new Block(new Vector2(1,1) ,BlockType.LADDER );
+		Block[][] blocks = level.getBlocks();
 		
 		do{
 			testPosition=bob.getPastPosition();
 							//(!blocks[col][row].getType().equals(BlockType.SPIKE) || !blocks[col][row].getType().equals(BlockType.SPIKE_TOP) || !blocks[col][row].getType().equals(BlockType.SPIKE_RIGHT) || !blocks[col][row].getType().equals(BlockType.SPIKE_LEFT)  )){
 			if(testPosition==null){
-				return level.getBobStart();
+				return bestPos;
 				
 			}
 			cleanZone.height=3;
 			cleanZone.width=3;
-			cleanZone.x=testPosition.x-1.5f;
-			cleanZone.y=testPosition.y-1.5f;
-			if(safeFromFireballs(cleanZone) && safeFromSkeletons(cleanZone) ){
-				if(level.getCollidableBlocks((int) testPosition.x, (int) testPosition.y ).equals(BlockType.METAL)){
-					isSafe=true;
+			if(testPosition.x >= 2.6f ){
+				cleanZone.x=testPosition.x-1.5f;		
+			}else{
+				cleanZone.x=1f;		
+			}
+			if(testPosition.y >= 2.6f ){
+				cleanZone.y=testPosition.y-1.5f;			
+			}else{
+				cleanZone.y=1f;
+			
+			}
+			if(safeFromFireballs(cleanZone) && safeFromSkeletons(cleanZone) && safeFromFire(cleanZone)){
+				// something is broken here as I am not always reviving ontop of a block 
+				
+				 testBlock =blocks[(int) testPosition.x][(int) testPosition.y-1];
+				if(testBlock!=null){
+					if(testBlock.getType().equals(BlockType.METAL)){
+						if(blocks[(int) testPosition.x][(int) testPosition.y]==null){
+							
+							bestPos = testPosition;
+							isSafe= true;
+							return testPosition;
+						}
+					}
 				}
+		
 			}else{
 				isSafe=false;
 			}
 		}while(isSafe==false && testPosition!=null);
-		if(testPosition==null){
-			return level.getBobStart();
-			
-		}
+
 		return testPosition;
 		
 	}
@@ -317,9 +337,16 @@ private boolean safeFromSkeletons(Rectangle safeArea){
 	return true;
 }
 
-private boolean safeFromFire(Rectangle cleanArea){
-	return true;
+private boolean safeFromFire(Rectangle safeArea){
 	
+	for(int i= (int)safeArea.x ;i<=(int) safeArea.x + safeArea.width; i++){
+		for(int j= (int)safeArea.y ;j<=(int) safeArea.y + safeArea.height; j++){
+			if(level.getCollidableFires(i,j)!=null )
+				return false;
+		}
+
+	}
+	return true;
 }
 
 

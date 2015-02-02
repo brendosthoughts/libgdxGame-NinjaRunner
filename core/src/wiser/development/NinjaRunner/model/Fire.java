@@ -9,6 +9,7 @@ public class Fire {
 
   Vector2  position = new Vector2();
   Rectangle  bounds = new Rectangle();
+  float stateTime=0;
 
  public Fire(Vector2 pos) {
   this.position = pos;
@@ -24,4 +25,11 @@ public class Fire {
 	 return position;
 	 
  }
+  public void update(float delta){
+	stateTime+=delta;
+  }
+  
+  public float getStateTime(){
+	  return stateTime;
+  }
 }

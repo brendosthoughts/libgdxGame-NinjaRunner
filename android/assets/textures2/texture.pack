@@ -4,441 +4,448 @@ filter: Linear,Linear
 repeat: none
 ninja-sword-4
   rotate: false
-  xy: 2, 509
+  xy: 172, 705
   size: 168, 116
   orig: 168, 116
   offset: 0, 0
   index: -1
 skelton-3
   rotate: false
-  xy: 306, 52
+  xy: 37, 823
   size: 30, 65
   orig: 30, 65
   offset: 0, 0
   index: -1
 ninja-3
   rotate: false
-  xy: 2, 195
+  xy: 288, 409
   size: 46, 73
   orig: 46, 73
   offset: 0, 0
   index: -1
 ninja-climb-2
   rotate: false
-  xy: 228, 121
+  xy: 103, 511
   size: 52, 70
   orig: 52, 70
   offset: 0, 0
   index: -1
 ghost-4
   rotate: false
-  xy: 261, 509
+  xy: 94, 278
   size: 85, 128
   orig: 85, 128
   offset: 0, 0
   index: -1
 ninja-flip-3
   rotate: false
-  xy: 198, 289
-  size: 96, 95
-  orig: 96, 95
+  xy: 400, 511
+  size: 44, 48
+  orig: 44, 48
   offset: 0, 0
   index: -1
 ninja-up-down
   rotate: false
-  xy: 143, 195
+  xy: 342, 705
   size: 47, 74
   orig: 47, 74
   offset: 0, 0
   index: -1
 fire-ball
   rotate: false
-  xy: 174, 2
+  xy: 288, 2
   size: 16, 31
   orig: 16, 31
   offset: 0, 0
   index: -1
 ninja-6
   rotate: false
-  xy: 235, 195
+  xy: 425, 409
   size: 40, 75
   orig: 40, 75
   offset: 0, 0
   index: -1
 skelton-die-2
   rotate: false
-  xy: 271, 2
+  xy: 142, 823
   size: 36, 39
   orig: 36, 39
   offset: 0, 0
   index: -1
 ninja-sword-3
   rotate: false
-  xy: 2, 391
+  xy: 2, 705
   size: 168, 116
   orig: 168, 116
   offset: 0, 0
   index: -1
 skelton-tough-1
   rotate: false
-  xy: 2, 121
+  xy: 180, 823
   size: 31, 67
   orig: 31, 67
   offset: 0, 0
   index: -1
 ninja-1
   rotate: false
-  xy: 50, 195
+  xy: 204, 409
   size: 40, 74
   orig: 40, 74
   offset: 0, 0
   index: -1
 skelton-4
   rotate: false
-  xy: 425, 52
+  xy: 69, 823
   size: 34, 67
   orig: 34, 67
   offset: 0, 0
   index: -1
 ninja-flip-1
   rotate: false
-  xy: 100, 289
-  size: 96, 95
-  orig: 96, 95
+  xy: 312, 511
+  size: 40, 51
+  orig: 40, 51
   offset: 0, 0
   index: -1
 ladder
   rotate: false
-  xy: 409, 2
+  xy: 427, 278
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 spring-full
   rotate: false
-  xy: 244, 2
+  xy: 82, 892
   size: 25, 36
   orig: 25, 36
   offset: 0, 0
   index: -1
 ninja-climb-3
   rotate: false
-  xy: 371, 121
+  xy: 157, 511
   size: 50, 72
   orig: 50, 72
   offset: 0, 0
   index: -1
 ghost-die
   rotate: false
-  xy: 377, 195
+  xy: 181, 278
   size: 122, 92
   orig: 122, 92
   offset: 0, 0
   index: -1
 direction-arrow-up
   rotate: false
-  xy: 102, 52
+  xy: 102, 2
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 ninja-7
   rotate: false
-  xy: 192, 195
+  xy: 467, 409
   size: 41, 74
   orig: 41, 74
   offset: 0, 0
   index: -1
-ghostHover-3
+ghost- hover-3
   rotate: false
-  xy: 2, 778
+  xy: 110, 140
   size: 106, 136
   orig: 106, 136
   offset: 0, 0
   index: -1
 ninja-down
   rotate: false
-  xy: 92, 195
+  xy: 261, 511
   size: 49, 74
   orig: 49, 74
   offset: 0, 0
   index: -1
 ninja-punch-1
   rotate: false
-  xy: 123, 121
+  xy: 446, 511
   size: 49, 68
   orig: 49, 68
   offset: 0, 0
   index: -1
 ninja-climb-4
   rotate: false
-  xy: 373, 52
+  xy: 209, 511
   size: 50, 66
   orig: 50, 66
   offset: 0, 0
   index: -1
 skelton-die-1
   rotate: false
-  xy: 202, 52
+  xy: 105, 823
   size: 35, 61
   orig: 35, 61
   offset: 0, 0
   index: -1
 ghost-2
   rotate: false
-  xy: 172, 509
+  xy: 411, 140
   size: 87, 127
   orig: 87, 127
   offset: 0, 0
   index: -1
 block
   rotate: false
-  xy: 52, 52
+  xy: 2, 2
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 spikes
   rotate: false
-  xy: 359, 2
+  xy: 2, 892
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
+ghost- hover-1
+  rotate: false
+  xy: 340, 2
+  size: 106, 136
+  orig: 106, 136
+  offset: 0, 0
+  index: -1
 skelton-tough-4
   rotate: false
-  xy: 35, 121
+  xy: 280, 823
   size: 34, 67
   orig: 34, 67
   offset: 0, 0
   index: -1
 ghost-field
   rotate: false
-  xy: 110, 778
-  size: 200, 200
-  orig: 200, 200
+  xy: 305, 278
+  size: 120, 120
+  orig: 120, 120
   offset: 0, 0
   index: -1
-ghostHover-1
+ghost- hover-4
   rotate: false
-  xy: 87, 640
-  size: 106, 136
-  orig: 106, 136
-  offset: 0, 0
-  index: -1
-ghostHover-4
-  rotate: false
-  xy: 303, 640
+  xy: 218, 140
   size: 106, 136
   orig: 106, 136
   offset: 0, 0
   index: -1
 ninja-up
   rotate: false
-  xy: 277, 195
+  xy: 391, 705
   size: 56, 77
   orig: 56, 77
   offset: 0, 0
   index: -1
 spikes-left
   rotate: false
-  xy: 309, 2
+  xy: 416, 823
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 ninja-4
   rotate: false
-  xy: 329, 121
+  xy: 336, 409
   size: 40, 71
   orig: 40, 71
   offset: 0, 0
   index: -1
 fire
   rotate: false
-  xy: 210, 2
+  xy: 306, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 fire-ball-left-2
   rotate: false
-  xy: 2, 2
+  xy: 222, 2
   size: 31, 16
   orig: 31, 16
   offset: 0, 0
   index: -1
 dirt_grass
   rotate: false
-  xy: 35, 2
+  xy: 152, 2
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 ninja-sword-2
   rotate: false
-  xy: 342, 391
+  xy: 282, 587
   size: 168, 116
   orig: 168, 116
   offset: 0, 0
   index: -1
 skelton-tough-2
   rotate: false
-  xy: 338, 52
+  xy: 213, 823
   size: 33, 65
   orig: 33, 65
   offset: 0, 0
   index: -1
 skelton-1
   rotate: false
-  xy: 461, 52
+  xy: 449, 705
   size: 31, 67
   orig: 31, 67
   offset: 0, 0
   index: -1
 speed-pad-1
   rotate: false
-  xy: 2, 52
+  xy: 316, 823
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 ninja-star-rotate
   rotate: false
-  xy: 116, 2
+  xy: 54, 587
   size: 27, 27
   orig: 27, 27
   offset: 0, 0
   index: -1
 ninja-star
   rotate: false
-  xy: 145, 2
+  xy: 83, 587
   size: 27, 27
   orig: 27, 27
   offset: 0, 0
   index: -1
 ninja-5
   rotate: false
-  xy: 282, 121
+  xy: 378, 409
   size: 45, 70
   orig: 45, 70
   offset: 0, 0
   index: -1
 metalplatform
   rotate: false
-  xy: 296, 289
+  xy: 2, 409
   size: 200, 100
   orig: 200, 100
   offset: 0, 0
   index: -1
 ninja-punch-2
   rotate: false
-  xy: 71, 121
+  xy: 2, 587
   size: 50, 68
   orig: 50, 68
   offset: 0, 0
   index: -1
 ninja-8
   rotate: false
-  xy: 423, 121
+  xy: 2, 511
   size: 45, 72
   orig: 45, 72
   offset: 0, 0
   index: -1
 spring-compressed
   rotate: false
-  xy: 86, 2
+  xy: 52, 892
   size: 28, 24
   orig: 28, 24
   offset: 0, 0
   index: -1
 ghost-3
   rotate: false
-  xy: 348, 509
+  xy: 2, 278
   size: 90, 129
   orig: 90, 129
   offset: 0, 0
   index: -1
-ghostHover-2
+ghost- hover-2
   rotate: false
-  xy: 195, 640
+  xy: 2, 140
   size: 106, 136
   orig: 106, 136
   offset: 0, 0
   index: -1
 direction-arrow-right
   rotate: false
-  xy: 152, 52
+  xy: 52, 2
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 ninja-sword-1
   rotate: false
-  xy: 172, 391
+  xy: 112, 587
   size: 168, 116
   orig: 168, 116
   offset: 0, 0
   index: -1
 skelton-tough-3
   rotate: false
-  xy: 239, 52
+  xy: 248, 823
   size: 30, 65
   orig: 30, 65
   offset: 0, 0
   index: -1
+fire-2
+  rotate: false
+  xy: 170, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 fire-ball-2
   rotate: false
-  xy: 192, 2
+  xy: 204, 2
   size: 16, 31
   orig: 16, 31
   offset: 0, 0
   index: -1
 skelton-2
   rotate: false
-  xy: 271, 52
+  xy: 2, 823
   size: 33, 65
   orig: 33, 65
   offset: 0, 0
   index: -1
 fire-ball-left
   rotate: false
-  xy: 53, 2
+  xy: 255, 2
   size: 31, 16
   orig: 31, 16
   offset: 0, 0
   index: -1
 ninja-2
   rotate: false
-  xy: 335, 195
+  xy: 246, 409
   size: 40, 77
   orig: 40, 77
   offset: 0, 0
   index: -1
 ninja-climb-1
   rotate: false
-  xy: 174, 121
+  xy: 49, 511
   size: 52, 69
   orig: 52, 69
   offset: 0, 0
   index: -1
 ghost-1
   rotate: false
-  xy: 2, 640
+  xy: 326, 140
   size: 83, 130
   orig: 83, 130
   offset: 0, 0
   index: -1
 ninja-flip-2
   rotate: false
-  xy: 2, 289
-  size: 96, 95
-  orig: 96, 95
+  xy: 354, 511
+  size: 44, 63
+  orig: 44, 63
   offset: 0, 0
   index: -1
 speed-pad-2
   rotate: false
-  xy: 459, 2
+  xy: 366, 823
   size: 48, 48
   orig: 48, 48
   offset: 0, 0

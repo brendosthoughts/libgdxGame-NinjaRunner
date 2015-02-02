@@ -75,11 +75,10 @@ public class GameOverScreen implements Screen{
 			}
 			if (soundBounds.contains(touchPoint.x, touchPoint.y)) {
 				Assets.playSound(Assets.clickSound);
-				Settings.soundEnabled = !Settings.soundEnabled;
-				if (Settings.soundEnabled)
+				Settings.toggleSound();
+				if (Settings.isSoundEnabled()){
 					Assets.music.play();
-				else
-					Assets.music.pause();
+				}else Assets.music.pause();
 			}
 		}
 	}
@@ -99,12 +98,12 @@ public class GameOverScreen implements Screen{
 
 		batcher.begin();
 		batcher.enableBlending();
-		batcher.draw(Settings.soundEnabled ? Assets.soundOn : Assets.soundOff, 0, 0, 1.5f, 1.5f);
+		batcher.draw(Settings.isSoundEnabled() ? Assets.soundOn : Assets.soundOff, 0, 0, 1.5f, 1.5f);
 
 		batcher.draw(Assets.gameOver,CAMERA_WIDTH/8, 3*CAMERA_HEIGHT/5, CAMERA_WIDTH*3 /4 , 2*CAMERA_HEIGHT/5 );
 		// bob has been revived once already so must satrt from begining 
 		if(revivePos!=null){
-		batcher.draw(Assets.ninjaStars, 7*CAMERA_WIDTH /16 , CAMERA_HEIGHT/3 + CAMERA_HEIGHT/8, CAMERA_WIDTH/8, CAMERA_HEIGHT/8 );
+		batcher.draw(Assets.revive, 7*CAMERA_WIDTH /16 , CAMERA_HEIGHT/3 + CAMERA_HEIGHT/8, CAMERA_WIDTH/8, CAMERA_HEIGHT/8 );
 		}
 		batcher.draw(Assets.retry, CAMERA_WIDTH /3 - CAMERA_WIDTH/16 , CAMERA_HEIGHT/6, CAMERA_WIDTH/8, CAMERA_HEIGHT/8 );
 		batcher.draw(Assets.menu, 2*CAMERA_WIDTH/3 -CAMERA_WIDTH/16 , CAMERA_HEIGHT/6, CAMERA_WIDTH/8, CAMERA_HEIGHT/8 );		

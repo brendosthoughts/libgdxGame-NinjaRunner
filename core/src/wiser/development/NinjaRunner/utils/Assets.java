@@ -36,9 +36,13 @@ public class Assets {
 	public static TextureRegion levelComplete;
 	public static TextureRegion nextLevel;
 	public static TextureRegion gameOver;
+	public static TextureRegion resume;
+	public static TextureRegion revive;
 	
 	public static TextureRegion continuePlaying;
 	/** Textures **/
+	public static TextureRegion fire_1;
+	public static TextureRegion fire_2;
 	public static TextureRegion directionRight;
 	public static TextureRegion directionUp;
 	public static TextureRegion directionLeft;
@@ -56,6 +60,7 @@ public class Assets {
 	public static TextureRegion fireBallLeftTexture[];
 	public static TextureRegion fireBallRightTexture[];
 	public static TextureRegion ghostHoverTexture[];
+
 	
 	
 	public static TextureRegion bobFrame;
@@ -90,7 +95,7 @@ public class Assets {
 	public static Animation fireballRightAnimation;
 	public static Animation ghostLeftAnimation;
 	public static Animation ghostRightAnimation;
-	
+	public static Animation fireAnimation;
 	public static Animation swordLeftAnimation;
 	public static Animation swordRightAnimation;	
 	public static Animation skeletonLeftAnimation;
@@ -124,7 +129,7 @@ public class Assets {
 	}
 
 	public static void load () {
-		TextureAtlas iconatlas = new TextureAtlas(Gdx.files.internal("textures/menu.pack"));
+		TextureAtlas iconatlas = new TextureAtlas(Gdx.files.internal("textures2/menu.pack"));
 		continuePlaying =iconatlas.findRegion("continue-playing");
 		logo = iconatlas.findRegion("logo");
 		soundOff =iconatlas.findRegion("sound-off");
@@ -132,8 +137,10 @@ public class Assets {
 		arrow = iconatlas.findRegion("play");
 		pause = iconatlas.findRegion("pause");
 		play =iconatlas.findRegion("play");
+		resume = iconatlas.findRegion("resume");
 		menu =iconatlas.findRegion("menu");
 		retry=iconatlas.findRegion("retry");
+		revive=iconatlas.findRegion("revive");
 		playOverlay=iconatlas.findRegion("play-overlay");
 		gameOver= iconatlas.findRegion("gameover");
 		levelComplete= iconatlas.findRegion("levelComplete");
@@ -142,7 +149,7 @@ public class Assets {
 		music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
 		music.setLooping(true);
 		music.setVolume(0.5f);
-		if (Settings.soundEnabled) music.play();
+		if (Settings.isSoundEnabled()) music.play();
 		jumpSound = Gdx.audio.newSound(Gdx.files.internal("jump.wav"));
 		highJumpSound = Gdx.audio.newSound(Gdx.files.internal("highjump.wav"));
 		hitSound = Gdx.audio.newSound(Gdx.files.internal("hit.wav"));
@@ -152,6 +159,8 @@ public class Assets {
 		smallfont =new BitmapFont(Gdx.files.internal("font/smallfont.fnt"), Gdx.files.internal("font/smallfont.png"), false);
 		largerfont =new BitmapFont(Gdx.files.internal("font/largerfont.fnt"), Gdx.files.internal("font/largerfont.png"), false);
 		TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("textures2/texture.pack"));
+
+
 		ninjaStars = atlas.findRegion("ninja-star");
 		bobIdleLeft = atlas.findRegion("ninja-1");
 		bobIdleRight = new TextureRegion(bobIdleLeft);
@@ -167,10 +176,17 @@ public class Assets {
 		directionDown =new TextureRegion(directionUp);
 		directionLeft.flip(true, false);
 		directionDown.flip(false, true);
-//		spikeLeftTexture = atlas.findRegion(spikesLeft)
-//		spikeRightTexture = new TextureRegion(spikeLeftTexture);
+		spikeLeftTexture = atlas.findRegion("spikes-left");
+		spikeRightTexture = new TextureRegion(spikeLeftTexture);
+		spikeRightTexture.flip(true, true);
 		spikeTopTexture.flip(true, true);
 		fireTexture = atlas.findRegion("fire");
+		
+		TextureRegion[] moving_fire = new TextureRegion[2];
+		moving_fire[0] = atlas.findRegion("fire");
+		moving_fire[1] = atlas.findRegion("fire-2");
+		fireAnimation = new Animation(RUNNING_FRAME_DURATION*2, moving_fire);
+		
 		TextureRegion[] fireBallDownTexture = new TextureRegion[2];
 		TextureRegion[] fireBallUpTexture = new TextureRegion[2];
 		TextureRegion[] fireBallRightTexture = new TextureRegion[2];
@@ -365,6 +381,6 @@ public class Assets {
 	}
 
 	public static void playSound (Sound sound) {
-		if (Settings.soundEnabled) sound.play(1);
+		if (Settings.isSoundEnabled()) sound.play(1);
 	}
 }

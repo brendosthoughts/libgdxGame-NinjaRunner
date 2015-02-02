@@ -21,6 +21,7 @@ import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 
 public class GameScreen implements Screen, GestureListener, InputProcessor{
 
@@ -57,7 +58,7 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 	long time_on_screen;
 	boolean beenRevived;
 	float down_x, down_y , initpos_y, initpos_x, initpan_x, initpan_y, delta_x, delta_y;
-
+	float[] rgb =new float[4];
 
 	public GameScreen(Game game, int levelNum){
 		touchPoint = new Vector3();
@@ -71,7 +72,7 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 		 nextLevelBounds= new Rectangle(this.cam.position.x + CAMERA_WIDTH/8  , this.cam.position.y- 3*CAMERA_HEIGHT/8, CAMERA_WIDTH/4 ,CAMERA_HEIGHT/5);
 		retryBounds= new Rectangle(this.cam.position.x - 3*CAMERA_WIDTH/8  , this.cam.position.y- 3*CAMERA_HEIGHT/8, CAMERA_WIDTH/4 ,CAMERA_HEIGHT/5);
 
-		pauseBounds = new Rectangle( this.cam.position.x +  CAMERA_WIDTH/2 -1f,this.cam.position.y+CAMERA_HEIGHT/2  -1f, 2f, 2f);
+		pauseBounds = new Rectangle( this.cam.position.x +  CAMERA_WIDTH/2 -3f,this.cam.position.y+CAMERA_HEIGHT/2  -3f, 1f, 1f);
 		resumeBounds = new Rectangle( this.cam.position.x - CAMERA_WIDTH/2, this.cam.position.y , CAMERA_WIDTH, CAMERA_HEIGHT/2);
 		quitBounds = new Rectangle( this.cam.position.x -  CAMERA_WIDTH/2 ,this.cam.position.y -CAMERA_HEIGHT/2 ,CAMERA_WIDTH, CAMERA_HEIGHT/2);
 		ninjaInfo = new Rectangle(  cam.position.x - CAMERA_WIDTH/2 +1f, cam.position.y +CAMERA_HEIGHT/2 -1f, 1f,1f);
@@ -165,11 +166,12 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 		controller.leftReleased();
 		controller.rightReleased();
 		controller.getBob().setVelocity(new Vector2(0,0));
+		rgb=renderer.getLevelColor();
 		gameState= GameState.RUNNING;
 		
 	}
 	private void updatePaused() {
-		/*Gdx.gl.glClearColor(0.7f, 0.1f, 0.1f, 1);
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		resumeBounds.set( cam.position.x +CAMERA_WIDTH/8, cam.position.y -CAMERA_HEIGHT/4,CAMERA_WIDTH/4, CAMERA_HEIGHT/4);
 		quitBounds.set( cam.position.x - 3*CAMERA_WIDTH/8, cam.position.y -CAMERA_HEIGHT/4,CAMERA_WIDTH/4, CAMERA_HEIGHT/4);
@@ -190,11 +192,13 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 				
 				return;
 			}
-		}*/
+		}
 		
 	}
 
 	private void updateRunning(float delta){
+	//	Gdx.gl.glClearColor(red, green, blue, alpha);
+		// this wil be replaced with rgb
 		Gdx.gl.glClearColor(0.7f, 0.1f, 0.1f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		if (Gdx.input.justTouched()) {
@@ -202,12 +206,13 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 
 			if (pauseBounds.contains(touchPoint.x, touchPoint.y)) {
 				Assets.playSound(Assets.clickSound);
-			//	gameState = GameState.PAUSED;
+				gameState = GameState.PAUSED;
 				return;
 			}
 		}
 		// update rectangle bounds for pause button and pause menu 
-		pauseBounds.set(  this.cam.position.x + CAMERA_WIDTH/2 -1f , this.cam.position.y +CAMERA_HEIGHT/2 -1f  , 2f, 2f);
+		pauseBounds.set(cam.position.x + CAMERA_WIDTH/2 -1f  ,cam.position.y +CAMERA_HEIGHT/2 -1f , 2f, 2f);
+		
 		objectController.update(delta);
 		skeletonController.update(delta);
 		controller.update(delta); 
@@ -220,7 +225,7 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 		}	
 	}
 	private void updateGameOver(){
-		if ((time_on_screen + 40  <=  System.currentTimeMillis()) ||Gdx.input.justTouched()) {
+	//	if ((time_on_screen + 40  <=  System.currentTimeMillis()) ||Gdx.input.justTouched()) {
 			// if bob has not been revived user may revive hime else user can replay level or go to ain menu 
 			//at the game over screen 
 			if(beenRevived==false){
@@ -228,7 +233,7 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 			}else{
 				game.setScreen(new GameOverScreen(game, levelNumber,null));
 			}
-		}		
+		//}		
 	}
 	
 	public void draw(){
@@ -252,9 +257,11 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 		
 	}
 	private void presentLevelEnd() {
-		batcher.enableBlending();
+//		batcher.enableBlending();
+		
 		batcher.draw(Assets.levelComplete,  this.cam.position.x - 3*CAMERA_WIDTH/8  , this.cam.position.y, 3*CAMERA_WIDTH/4 ,2*CAMERA_HEIGHT/5);
-		batcher.disableBlending();
+		
+//		batcher.disableBlending();
 	}
 
 	private void presentReady() {
@@ -272,20 +279,20 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 	private void presentPaused() {
 		/// i want to put in some sort of pause menu text perhaps an add 
 		
-	//	batcher.draw(Assets.play, cam.position.x +CAMERA_WIDTH/8, cam.position.y -CAMERA_HEIGHT/4,CAMERA_WIDTH/4, CAMERA_HEIGHT/4);
-	//	batcher.draw(Assets.menu, cam.position.x - 3*CAMERA_WIDTH/8, cam.position.y -CAMERA_HEIGHT/4,CAMERA_WIDTH/4, CAMERA_HEIGHT/4);
+		batcher.draw(Assets.resume, cam.position.x +CAMERA_WIDTH/8, cam.position.y -CAMERA_HEIGHT/4,CAMERA_WIDTH/4, CAMERA_HEIGHT/4);
+		batcher.draw(Assets.menu, cam.position.x - 3*CAMERA_WIDTH/8, cam.position.y -CAMERA_HEIGHT/4,CAMERA_WIDTH/4, CAMERA_HEIGHT/4);
 
 		
 	}
 
 	private void presentGameOver() {
-		time_on_screen= System.currentTimeMillis();
+	//	time_on_screen= System.currentTimeMillis();
 		controller.getBob().setState(BobState.DEAD);
 
-		batcher.enableBlending();
+	/*	batcher.enableBlending();
 		///replace this with Ninja has Reached his desmisetem.
 		batcher.draw(Assets.gameOver,this.cam.position.x - 3*CAMERA_WIDTH/8, cam.position.y , CAMERA_WIDTH*3 /4 , 2*CAMERA_HEIGHT/5 );
-		batcher.disableBlending();		
+		batcher.disableBlending();	*/	
 	}
 
 	@Override
@@ -314,7 +321,7 @@ public class GameScreen implements Screen, GestureListener, InputProcessor{
 
 @Override
 	public void pause() {
-		//if (gameState == gameState.RUNNING) gameState = gameState.PAUSED;
+		if (gameState == gameState.RUNNING) gameState = gameState.PAUSED;
 
 	}
 
@@ -392,6 +399,13 @@ public boolean fling(float velocityX, float velocityY, int button) {
 
 @Override
 public boolean touchDown(int x, int y, int pointer, int button) {
+	if (pauseBounds.contains(x, y)) {
+		Assets.playSound(Assets.clickSound);
+		gameState = GameState.PAUSED;
+		message= "pause was clicked  the game should be in PAUSE state";
+		Gdx.app.log("INFO", message);
+		return true;
+	}
 
 	if (x < width / 4 && y > height / 2) {
 		directionPointer= pointer;
@@ -439,6 +453,13 @@ public boolean touchDown(int x, int y, int pointer, int button) {
 
 @Override
 public boolean touchUp(int x, int y, int pointer, int button) {
+	if (pauseBounds.contains(x, y)) {
+		Assets.playSound(Assets.clickSound);
+		gameState = GameState.PAUSED;
+		message= "pause was clicked  the game should be in PAUSE state";
+		Gdx.app.log("INFO", message);
+		return true;
+	}
 
 	if ( pointer == directionPointer) {			
 		controller.leftReleased();
@@ -448,20 +469,13 @@ public boolean touchUp(int x, int y, int pointer, int button) {
 		directionPointer=-1;
 		//return false;				
 	}else if (pointer == actionPointer){
-	 // need a way to find difference between down_x and x and down_y and y 7
-	// to compare against eachother the larger of the 2 with a min value will be used to determine 
 	//	swipe direction
 	// or if not over max , a punch 
 	
 	
 		dif_x =Math.abs(down_x -x);
 		dif_y= Math.abs(down_y -y);
-//		if (dif_x < width/12 && dif_y<height/8){
-//			// not enough movement in a specific direction consider this a tap 
-//			controller.bobPunch();
-//			return false;
-//		}
-//		else
+
 		if(dif_y> dif_x && down_y -y >0){ // this is swipe up 
 			controller.bobJump();
 			return false;		
@@ -520,7 +534,6 @@ public boolean mouseMoved(int screenX, int screenY) {
 	// TODO Auto-generated method stub
 	return false;
 }
-/// neew to figure out how to integrate swipes into game properly
 
 
 @Override
@@ -530,8 +543,6 @@ return false;
 
 @Override
 public boolean tap(float x, float y, int count, int button) {
-//	message= "tap was detected";
-//	Gdx.app.log("INFO", message);
 	if (pauseBounds.contains(x, y)) {
 		Assets.playSound(Assets.clickSound);
 		gameState = GameState.PAUSED;
@@ -556,36 +567,7 @@ public boolean pan(float x, float y, float deltaX, float deltaY) {
 
 @Override
 public boolean panStop(float x, float y, int pointer, int button) {
-//	message="swipe not processed";
-//	if( pointer==actionPointer){
-//		delta_x= Math.abs(down_x -x);
-//		delta_y= Math.abs(down_y - y);
-//		if (delta_x < delta_y ){
-//			// this is an up or down value 
-//			if(down_x > x){
-//				controller.bobPunch();
-//				message = "SWIPE DOWNWARD " ;			
-//			}else {
-//				// swipe up 
-//				controller.bobJump();
-//				message = "SWIPE UPWARD " ;
-//			}			
-//		}else{
-//			if(down_y< y){
-//				controller.throwPressed();
-//				message=" SWIPE RIGHT";
-//				//swipe right ward 
-//			}else{
-//				controller.throwPressed();
-//				message=" SWIPE LEFT";
-//			   // swipe left 	
-//			}
-//		}
-//	}
-//	Gdx.app.log("INFO", message);
-//	message="panstop pointer is : " + pointer  + "the action pointer-> " +actionPointer + "directionPointer->" + directionPointer;
-//	Gdx.app.log("INFO", message);
-//	actionPointer=-1;
+
 	// TODO Auto-generated method stub
 	return false;
 }

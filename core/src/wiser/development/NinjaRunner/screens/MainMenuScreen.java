@@ -51,7 +51,7 @@ public class MainMenuScreen implements Screen{
 		guiCam = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT);
 		guiCam.position.set(CAMERA_WIDTH/2, CAMERA_HEIGHT/2, 0);
 		batcher = new SpriteBatch();
-		soundBounds = new Rectangle(0, 0, 1.5f, 1.5f);
+		soundBounds = new Rectangle(0, 0, 3f,3f);
 		levelsBounds= new Rectangle(0, CAMERA_HEIGHT/5, CAMERA_WIDTH, 3*CAMERA_HEIGHT/5);
 		touchPoint = new Vector3();
 		ArrayList<Rectangle> levelSelectBounds = new ArrayList<Rectangle>();
@@ -65,7 +65,7 @@ public class MainMenuScreen implements Screen{
 
 			if (levelsBounds.contains(touchPoint.x, touchPoint.y)) {
 				Assets.playSound(Assets.clickSound);
-				for (int z=0; z<=Settings.levels; z++){
+				for (int z=0; z<=Settings.levelReached() ; z++){
 					if(levelSelectBounds[z] != null){
 						if (levelSelectBounds[z].contains(touchPoint.x, touchPoint.y)) {
 							game.setScreen(new GameScreen(game, z));
@@ -80,8 +80,8 @@ public class MainMenuScreen implements Screen{
 
 			if (soundBounds.contains(touchPoint.x, touchPoint.y)) {
 				Assets.playSound(Assets.clickSound);
-				Settings.soundEnabled = !Settings.soundEnabled;
-				if (Settings.soundEnabled)
+				Settings.toggleSound();
+				if (Settings.isSoundEnabled())
 					Assets.music.play();
 				else
 					Assets.music.pause();
@@ -104,12 +104,17 @@ public class MainMenuScreen implements Screen{
 		batcher.enableBlending();
 		batcher.begin();
 		batcher.draw(Assets.logo, 0, 3*CAMERA_HEIGHT/5 , CAMERA_WIDTH, 2*CAMERA_HEIGHT/5);
-	
+		
+		if(Settings.isSoundEnabled()){
+			batcher.draw(Assets.soundOn, 0, 0 , 3f, 3f);
+		}else{
+			batcher.draw(Assets.soundOff, 0, 0 , 3f, 3f);
 
+		}
 		int j=2;
 		int k=0;
-		levelSelectBounds= new Rectangle[Settings.levels+1];
-		for(int i=1; i<=Settings.levels ; i++){
+		levelSelectBounds= new Rectangle[Settings.levelReached()+1];
+		for(int i=1; i<=Settings.levelReached() ; i++){
 			if(i>7){
 				j=1;
 				k=7;
@@ -119,8 +124,8 @@ public class MainMenuScreen implements Screen{
 				j=2;
 				k=14;
 			}
-			if(i <= Settings.levelReached){
-				if (i == Settings.levelReached){
+			if(i <= Settings.levelReached()){
+				if (i == Settings.levelReached()){
 					batcher.draw(Assets.blockTexture, CAMERA_WIDTH*(i-k-1) /7 , j*CAMERA_HEIGHT/5, CAMERA_WIDTH/8, CAMERA_HEIGHT/5 );
 					batcher.enableBlending();
 					batcher.draw(Assets.playOverlay, CAMERA_WIDTH*(i-k- 1) /7 , j*CAMERA_HEIGHT/5, CAMERA_WIDTH/8, CAMERA_HEIGHT/5 );		
@@ -141,7 +146,7 @@ public class MainMenuScreen implements Screen{
 				batcher.disableBlending();
 				levelSelectBounds[i]=null;
 			}
-
+			
 
 			levelNum= ""+ i;
 			batcher.enableBlending();
@@ -184,7 +189,7 @@ public class MainMenuScreen implements Screen{
 
 	@Override
 	public void pause () {
-		Settings.save();
+		
 	}
 
 	@Override

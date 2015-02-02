@@ -43,9 +43,9 @@ public class LevelCompleteScreen implements Screen{
 		retryBounds= new Rectangle( CAMERA_WIDTH/8  , CAMERA_HEIGHT/8, CAMERA_WIDTH/4 ,CAMERA_HEIGHT/5);
 		
 		touchPoint = new Vector3();
-		levelSelect=0;
-		if(levelNum +1 > Settings.levelReached){
-			Settings.saveLevel(levelNum+1);
+		if(levelNum == Settings.levelReached()){
+			
+			Settings.newLevelComplete();
 		}
 	}
 
@@ -73,20 +73,24 @@ public class LevelCompleteScreen implements Screen{
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		guiCam.update();
 		batcher.setProjectionMatrix(guiCam.combined);
-
 		batcher.disableBlending();
 
 
 
 		batcher.begin();
 		batcher.enableBlending();
+		if(Settings.levelReached() < Settings.totalLevels()){
 		batcher.draw(Assets.levelComplete,  CAMERA_WIDTH/8  , CAMERA_HEIGHT/2, 3*CAMERA_WIDTH/4 ,2*CAMERA_HEIGHT/5);
 		batcher.draw(Assets.retry,  CAMERA_WIDTH/8  ,CAMERA_HEIGHT/8, CAMERA_WIDTH/4 ,CAMERA_HEIGHT/5);
 		batcher.draw(Assets.nextLevel, + 9*CAMERA_WIDTH/16  ,  CAMERA_HEIGHT/8, CAMERA_WIDTH/4 , CAMERA_HEIGHT/6);
 		batcher.draw(Assets.play, 5*CAMERA_WIDTH/8  ,  CAMERA_HEIGHT/4, 3*CAMERA_WIDTH/16 , 3*CAMERA_HEIGHT/16);
+		}else{
+			batcher.draw(Assets.logo,  CAMERA_WIDTH/8  , CAMERA_HEIGHT/2, 3*CAMERA_WIDTH/4 ,2*CAMERA_HEIGHT/5);
+				
+			
+		}
 		
-		
-
+		batcher.disableBlending();
 
 
 		batcher.end();

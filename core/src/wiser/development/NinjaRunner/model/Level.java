@@ -12,6 +12,7 @@ import wiser.development.NinjaRunner.model.SpeedPad.SpeedPadType;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
+import com.badlogic.gdx.utils.Array;
 
 public class Level {
 
@@ -32,8 +33,9 @@ public class Level {
 	ArrayList<NinjaStars> thrownStars = new ArrayList<NinjaStars>();
 	ArrayList<FireBall> realFireBalls = new ArrayList<FireBall>();
 	private Vector2 bob_start = new Vector2(3,2);
-
-	
+//	float[] bkg_color = new float[4]{0.7,}; // rgb & alpha for background color
+//
+//	bgk_color[0] =0.7f;
 	public Vector2 getFinish(){
 		return finish;
 	}
@@ -152,12 +154,19 @@ public class Level {
 			case 8:
 				level_eight();
 				break;
+			case 9:
+				level_nine();
+				break;
+			case 10: 
+				level_ten();
+				break;
 			default:
 				level_one();
 				break;
 		
 		}
 	}
+
 
 
 
@@ -251,19 +260,16 @@ public class Level {
 		 // fire one
 		
 		fire_balls[7][3]= new FireBall(new Vector2(7,3), 5f, 4f, FireBallState.UP);
-		speed_pads[7][1]= new SpeedPad(new Vector2(7,1), SpeedPadType.RIGHT);
 		
 //		skeletons[8][1]= new Skeleton(new Vector2(8,1), 2f , 2f, SkeletonType.SKELETON , true);
-		skeletons[8][3]= new Skeleton(new Vector2(8, 3),2f, 2f, SkeletonType.REAPER_HOVER, true, 2);	
+	//	skeletons[8][3]= new Skeleton(new Vector2(8, 3),2f, 2f, SkeletonType.REAPER_HOVER, true, 2);	
 		skeletons[9][1]= new Skeleton(new Vector2(9,1), 3f , 2f, SkeletonType.SKELETON , true,2);
 		skeletons[10][1]= new Skeleton(new Vector2(10, 1), SkeletonType.SKELETON);
 		ninja_stars[7][2]=new NinjaStars(new Vector2(7, 2), new Vector2(0,0));
 		springs[1][1] = new Spring(new Vector2(1,1));		
 		blocks[9][5]= new Block(new Vector2(9,5), BlockType.SPIKE);
 		springs[10][1] = new Spring(new Vector2(10,1));
-		for (int i = 1; i < 15; i++) {
-			climables[2][i] = new Climable(new Vector2(2,i),ClimbType.LADDER);
-		}
+
 		fires[11][1]= new Fire(new Vector2(11,1));
 		//jump one
 		 blocks[12][1] = new Block(new Vector2( 12, 1));
@@ -935,7 +941,7 @@ public class Level {
 		
 		springs[57][12] = new Spring(new Vector2(57,12));	
 		
-		platforms[62][21] = new Platform(new Vector2(62,21),  3, 2, PlatformState.LEFT);
+		platforms[62][21] = new Platform(new Vector2(62,21),  3, 3, PlatformState.LEFT);
 		
 		blocks[66][22] = new Block(new Vector2( 66, 22));		
 		blocks[67][22] = new Block(new Vector2( 67, 22));		
@@ -951,7 +957,7 @@ public class Level {
 		blocks[78][25] = new Block(new Vector2( 78,25 ));		
 		springs[78][26] = new Spring(new Vector2(78,26));	
 		
-		platforms[75][34] = new Platform(new Vector2(75,34),  3, 2, PlatformState.LEFT);
+		platforms[75][34] = new Platform(new Vector2(75,34),  3, 3, PlatformState.LEFT);
 		
 		blocks[73][34] = new Block(new Vector2(73 ,34 ));		
 		blocks[72][34] = new Block(new Vector2(72 ,34 ));		
@@ -1358,6 +1364,236 @@ public class Level {
 		finish= new Vector2(179, 79);
 		level_finish_build();		
 	}
+
+private void level_nine() {
+	// TODO Auto-generated method stub
+	width=170;
+	height=90;
+	level_setup(width, height);
+	bob_start.x=63;
+	bob_start.y=35;
+	blocks[1][2] = new Block(new Vector2(1 , 2));
+	blocks[2][2] = new Block(new Vector2(2 , 2));
+	blocks[3][2] = new Block(new Vector2(3 , 2));
+	blocks[4][2] = new Block(new Vector2(4 , 2));
+	blocks[5][2] = new Block(new Vector2(5 , 2));
+	blocks[6][2] = new Block(new Vector2(6 , 2));
+	blocks[7][2] = new Block(new Vector2(7 , 2));	
+	blocks[8][2] = new Block(new Vector2(8 , 2));
+	blocks[9][2] = new Block(new Vector2(9 , 2));
+	// two fireballs
+	fire_balls[11][3] = new FireBall(new Vector2(11,3), 2f , 2f, FireBallState.UP);
+	fire_balls[13][3] = new FireBall(new Vector2(13,3), 2f , 2f, FireBallState.DOWN);
+	
+	
+	blocks[14][2] = new Block(new Vector2(14 , 2));
+	blocks[15][2] = new Block(new Vector2(15 , 2));
+	blocks[16][2] = new Block(new Vector2(16 , 2));
+	blocks[17][2] = new Block(new Vector2(17 , 2));
+	//reaper
+	//skeletons[18][3]= new Skeleton(new Vector2(18,3), 1.5f , 1.5f, SkeletonType.REAPER_HOVER , true, 1);
+	
+	blocks[21][2] = new Block(new Vector2( 21, 2));
+	blocks[22][2] = new Block(new Vector2( 22, 2));
+	blocks[23][2] = new Block(new Vector2( 23, 2));
+	blocks[24][2] = new Block(new Vector2( 24, 2));
+	blocks[25][2] = new Block(new Vector2(25 , 2));
+	ninja_stars[24][3]=new NinjaStars(new Vector2(24,3), new Vector2(0,0));
+
+	//tough skeleton back&forth
+
+	skeletons[28][3]= new Skeleton(new Vector2(28,3), SkeletonType.SKELETON );
+	
+	blocks[26][2] = new Block(new Vector2( 26, 2));
+	blocks[27][2] = new Block(new Vector2( 27, 2));
+	blocks[28][2] = new Block(new Vector2( 28, 2));
+	blocks[29][2] = new Block(new Vector2( 29, 2));
+	blocks[30][2] = new Block(new Vector2( 30, 2));
+	
+	springs[30][3] = new Spring(new Vector2(30,3));		
+	
+
+	for(int i=2; i<25; i++){
+		blocks[31][i] = new Block(new Vector2(31 , i));
+	}
+	blocks[28][15] = new Block(new Vector2( 28,15 ));
+	blocks[27][15] = new Block(new Vector2( 27, 15));
+	blocks[26][15] = new Block(new Vector2( 26, 15));
+	blocks[25][15] = new Block(new Vector2(25 ,15 ), BlockType.SPIKE_TOP);	
+	blocks[24][16] = new Block(new Vector2( 24,16 ), BlockType.SPIKE_TOP);	
+	blocks[23][16] = new Block(new Vector2( 23, 16), BlockType.SPIKE_TOP);	
+	blocks[22][17] = new Block(new Vector2( 22,17 ), BlockType.SPIKE_TOP);	
+	blocks[21][13] = new Block(new Vector2( 21, 13), BlockType.SPIKE_TOP);	
+	blocks[20][13] = new Block(new Vector2(20 ,13 ), BlockType.SPIKE_TOP);
+	
+	blocks[19][13] = new Block(new Vector2( 19, 13));
+	blocks[18][13] = new Block(new Vector2( 18, 13));
+	blocks[17][13] = new Block(new Vector2( 17, 13));
+	//fireball up down 
+	fire_balls[16][13] = new FireBall(new Vector2(16,13), 2f , 2f, FireBallState.UP);
+	
+	blocks[16][13] = new Block(new Vector2( 16, 13));
+	blocks[15][13] = new Block(new Vector2( 15, 13));
+	blocks[14][13] = new Block(new Vector2( 14, 13));
+	blocks[13][13] = new Block(new Vector2( 13, 13));
+	//ladder from 14 to 27 on y axis
+	for(int i=14; i<27;i++){
+		climables[13][i] = new Climable(new Vector2(13,i),ClimbType.LADDER);
+	}
+	fire_balls[13][18] = new FireBall(new Vector2(13,18), 2f , 2f, FireBallState.LEFT);
+	fire_balls[13][24] = new FireBall(new Vector2(13,24), 2f , 2f, FireBallState.RIGHT);
+
+
+	blocks[15][26] = new Block(new Vector2( 15, 26));
+	blocks[16][26] = new Block(new Vector2( 16, 26));
+	blocks[17][26] = new Block(new Vector2( 17, 26));
+	blocks[18][26] = new Block(new Vector2( 18, 26));
+	blocks[19][26] = new Block(new Vector2( 19, 26));
+	blocks[20][26] = new Block(new Vector2( 20, 26));
+	blocks[21][26] = new Block(new Vector2( 21, 26));
+	blocks[22][26] = new Block(new Vector2( 22, 26));
+	blocks[23][26] = new Block(new Vector2( 23, 26));
+	blocks[24][26] = new Block(new Vector2( 24, 26));
+	blocks[25][26] = new Block(new Vector2( 25, 26));
+	blocks[26][26] = new Block(new Vector2( 26, 26));
+
+	// platform form 27 to 50 at 28x
+	platforms[38][28] = new Platform(new Vector2(38,28),  3, 12, PlatformState.RIGHT);
+	fire_balls[40][29] = new FireBall(new Vector2(40,28),  2, 12, FireBallState.RIGHT);
+	
+	fire_balls[29][28] = new FireBall(new Vector2( 29, 28), 2f , 2f, FireBallState.UP);
+	fire_balls[35][28] = new FireBall(new Vector2(35 , 28), 2f , 2f, FireBallState.DOWN);
+	fire_balls[41][28] = new FireBall(new Vector2( 41, 28), 2f , 2f, FireBallState.UP);
+	fire_balls[48][28] = new FireBall(new Vector2(48 , 28), 2f , 2f, FireBallState.DOWN);
+	
+	// fireballs spread acorrs stretch 
+	for(int i=27; i<45; i++){
+		if(i> 33 && i<39){
+			blocks[i][41] = new Block(new Vector2(i ,41 ), BlockType.SPIKE_TOP);
+			blocks[i][40] = new Block(new Vector2(i ,40), BlockType.SPIKE);
+		}else{
+		blocks[i][34] = new Block(new Vector2(i ,34 ), BlockType.SPIKE_TOP);
+		blocks[i][33] = new Block(new Vector2(i ,33), BlockType.SPIKE);	
+		}
+		blocks[i][26] = new Block(new Vector2(i ,26 ), BlockType.SPIKE_TOP);
+	}
+	blocks[51][30] = new Block(new Vector2(51 , 30));
+	blocks[52][30] = new Block(new Vector2(52 , 30));
+	blocks[53][30] = new Block(new Vector2(53 , 30));
+	blocks[54][30] = new Block(new Vector2(54 , 30));
+	blocks[55][30] = new Block(new Vector2(55 , 30));
+	blocks[56][30] = new Block(new Vector2(56 , 30));
+	blocks[57][30] = new Block(new Vector2(57 , 30));
+	blocks[58][30] = new Block(new Vector2( 58, 30));
+	blocks[59][30] = new Block(new Vector2( 59, 30));
+	blocks[60][30] = new Block(new Vector2( 60, 30));
+	
+	
+	blocks[62][32] = new Block(new Vector2(62 ,32 ));
+	blocks[63][32] = new Block(new Vector2( 63, 32));
+	blocks[64][32] = new Block(new Vector2( 64, 32));
+	 // sping at 63, 33
+	springs[63][33] = new Spring(new Vector2(63,33));
+	
+	// spring on this block
+	springs[65][45] = new Spring(new Vector2(65,45));
+	blocks[65][44] = new Block(new Vector2( 65, 44));
+	for(int i=46; i<66; i++){
+		blocks[87][i] = new Block(new Vector2( 87,i ), BlockType.SPIKE);
+	}
+	for(int i=30; i<55;i++){
+		blocks[66][i] = new Block(new Vector2( 66, i));
+			
+		
+	}
+	//speedpad on each block below 
+	for(int i=70; i<79; i++ ){
+		
+		speed_pads[i][54]= new SpeedPad(new Vector2(i, 54), SpeedPadType.RIGHT);
+		blocks[i][53] = new Block(new Vector2( i, 53));
+	}
+	
+	for(int i=80; i<84; i++ ){
+		speed_pads[i][51]= new SpeedPad(new Vector2(i, 51), SpeedPadType.LEFT);
+		blocks[i][50] = new Block(new Vector2( i, 50));
+	}
+	blocks[85][50] = new Block(new Vector2( 85, 50));
+	blocks[85][51] = new Block(new Vector2( 85, 51));
+	blocks[85][52] = new Block(new Vector2( 85, 52));
+	blocks[85][53] = new Block(new Vector2( 85, 53));
+	blocks[85][54] = new Block(new Vector2( 85, 54));
+	
+	
+	
+	for(int i=71; i<79; i++ ){
+		speed_pads[i][48]= new SpeedPad(new Vector2(i, 48), SpeedPadType.RIGHT);
+		blocks[i][47] = new Block(new Vector2( i, 47));
+	}
+	blocks[71][48] = new Block(new Vector2( 71, 48));
+	blocks[71][49] = new Block(new Vector2( 71, 49));
+	blocks[71][50] = new Block(new Vector2( 71, 50));
+	
+	for(int i=80; i<89; i++ ){	
+		speed_pads[i][41]= new SpeedPad(new Vector2(i, 41), SpeedPadType.RIGHT);
+		blocks[i][40] = new Block(new Vector2( i, 40));
+	}
+
+	for(int i=90; i<96; i++ ){
+		
+		speed_pads[i][35]= new SpeedPad(new Vector2(i, 35), SpeedPadType.RIGHT);
+		blocks[i][34] = new Block(new Vector2( i, 34));
+	}
+	
+	for(int i=95; i<119; i++ ){
+		blocks[i][32] = new Block(new Vector2( i, 32));
+	}
+	// put skeleton at 113 variance 2
+	skeletons[113][32]= new Skeleton(new Vector2(113,32), 2f,2f, SkeletonType.SKELETON , true, 1);
+	
+	blocks[116][33] = new Block(new Vector2( 116, 33));
+	blocks[117][33] = new Block(new Vector2( 117, 34));
+	blocks[116][34] = new Block(new Vector2( 116, 34));
+	
+	blocks[116][36] = new Block(new Vector2( 116, 36));
+	blocks[117][36] = new Block(new Vector2( 117, 36));
+	blocks[118][36] = new Block(new Vector2( 118, 36));
+	
+	blocks[120][38] = new Block(new Vector2( 120, 38));
+	blocks[121][39] = new Block(new Vector2( 121, 39));
+	
+	springs[121][40] = new Spring(new Vector2(121,40));
+	//reaper
+	//skeletons[126][38]= new Skeleton(new Vector2(126,38), 2f,2f, SkeletonType.REAPER_HOVER , true, 1);
+	
+	for(int i=127; i<138; i++ ){
+		
+		speed_pads[i][42]= new SpeedPad(new Vector2(i, 42), SpeedPadType.RIGHT);
+		blocks[i][41] = new Block(new Vector2( i, 41));
+	}
+	
+	for(int i=140; i<150; i++ ){
+		blocks[i][32] = new Block(new Vector2( i, 32));
+	}
+	
+	
+	finish= new Vector2(148, 33);
+	level_finish_build();
+	
+}
+	private void level_ten() {
+		// TODO Auto-generated method stub
+		width=190;
+		height=100;
+		level_setup(width, height);
+		bob_start.x=4;
+		bob_start.y=4;
+		
+		for(int i=1 ; i<20; i++){
+			blocks[i][2] = new Block(new Vector2( i, 2));
+		}
+		finish= new Vector2(14, 2);
+		level_finish_build();
+	}
 //skeletons[9][29]= new Skeleton(new Vector2(9,29), 2f , 2f, SkeletonType.SKELETON , true);
 	
 //		platforms[22][5] = new Platform(new Vector2(22,5),  2, 4, PlatformState.RIGHT);
@@ -1398,11 +1634,11 @@ private void level_setup(int width, int height){
 		}
 	}
 	for(int i =0; i<width; i++){
-		blocks[i][0] = new Block(new Vector2(i,0), BlockType.SPIKE_TOP);
+		blocks[i][1] = new Block(new Vector2(i,0), BlockType.SPIKE_TOP);
 		
 	}
 	for(int i=0; i <height; i++){
-		blocks[1][i] = new Block(new Vector2(0,i), BlockType.SPIKE_TOP);
+		blocks[1][i] = new Block(new Vector2(0,i), BlockType.SPIKE_RIGHT);
 	}
 
 	
@@ -1432,6 +1668,9 @@ private void level_finish_build(){
 
 public Vector2 getBobStart(){
 	return bob_start;
+}
+public float[] getLevelColor() {
+	return null; //bkg_color;
 }
 
 }

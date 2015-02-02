@@ -17,6 +17,7 @@ public class Bob {
 	public static final float SIZE_HEIGHT =0.9f;
 
 	Vector2 	position = new Vector2();
+	Vector2 	lastPosition = new Vector2();
 	Vector2 	acceleration = new Vector2(0,0);
 	Vector2 	velocity = new Vector2(0,0);
 	Rectangle 	bounds = new Rectangle();
@@ -32,12 +33,13 @@ public class Bob {
 	LimitedQueue<Vector2> pastPos = new LimitedQueue<Vector2>(50);
 	float lastPosTime=0;
 	boolean hitEnemy;
-	   
+	
 	
 	public Bob(Vector2 position) {
 		this.position = position;
 		this.bounds.x = position.x;
 		this.bounds.y = position.y;
+		this.lastPosition=position;
 		this.pastPos.add(position);
 		this.velocity= new Vector2(0,0);
 		this.stateTime=0;
@@ -145,12 +147,14 @@ public class Bob {
 
 		this.punchingBounds.x = position.x-0.5f;
 		this.punchingBounds.y = position.y-0.5f;
-		/*if (position.dst(pastPos)> 7 && delta *100 <lastPosTime){
-			pastPos=position;
+		
+		if ( delta *70 <lastPosTime){
+			
+			pastPos.push(new Vector2(position.x , position.y));
 			lastPosTime=0;
 		}else{
 			lastPosTime+=delta;
-		}*/
+		}
 		if(this.state.equals(BobState.PUNCHING)){
 			punchTime+=delta;
 				if(punchTime< delta*40){
@@ -166,14 +170,10 @@ public class Bob {
 		stateTime += delta;
 
 	}
-	public void addPastPos(){
-		if(!pastPos.contains(position) ){
-			pastPos.add(position);
-		}
-		
-	}
+
 	public Vector2 getPastPosition(){
-		return (Vector2) pastPos.poll();
+			//	pastPos.
+		return pastPos.pollFirst();
 	}
 	public boolean canThrow() {
 		return this.canThrow;

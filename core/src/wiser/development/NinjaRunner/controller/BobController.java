@@ -35,8 +35,8 @@ public class BobController {
 	private static final float ACCELERATION 	= 20f;
 	private static final float GRAVITY 			= -20f;
 	private static final float MAX_JUMP_SPEED	= 9f;
-	private static final float DAMP 			= 0.90f;
-	private static final float MAX_VEL 			= 4.9f;
+	private static final float DAMP 			= 0.9f;//0.90f;
+	private static final float MAX_VEL 			=  12f;//4.9f;
 	private static final float CLIMBING_SPEED =0.08f;
 	private World 	world;
 	private Bob 	bob;
@@ -164,9 +164,14 @@ public class BobController {
 			grounded=false;
 			
 		}*/
+		//this statement is to ensure that bob does not go below bounds of level and therefore causing a run time error 
+		//belief for bug is bob updating between delta's and missing the spikes thereofr falling forever
+		if(bob.getPosition().y < 1f){
+			bob.setState(BobState.DEAD);
+			gameScreen.setGameState(GameState.GAME_OVER);
+		}
 
 		processInput();
-
 		// If Bob is grounded then reset the stat= to IDLE 
 		if (grounded && (bob.getState().equals(BobState.JUMPING) || bob.getState().equals(BobState.DOUBLEJUMP))){		
 			bob.setState(BobState.IDLE);
@@ -176,7 +181,7 @@ public class BobController {
 		}
 		if(!on_platform){
 			bob.getAcceleration().y = GRAVITY;
-				
+			
 		}
 		bob.getAcceleration().scl(delta);
 		// apply acceleration to change velocity
@@ -206,7 +211,6 @@ public class BobController {
 			gameScreen.setGameState(GameState.LEVEL_END);
 		}
 		
-
 
 		// simply updates the state time
 		bob.update(delta);
@@ -290,7 +294,7 @@ public class BobController {
 			}
 		
 		
-			 else if(platform.getBounds().overlaps(bobRect)&& !on_platform){
+			 else if(platform.getBounds().overlaps(bobRect)){
 				if(bob.getVelocity().y>=0 &&(bob.getState().equals(BobState.JUMPING) || bob.getState().equals(BobState.DOUBLEJUMP))
 						&& bob.getPosition().y <= platform.getBounds().y+ 7*platform.getBounds().height/8){
 					bob.setPosition(new Vector2(bob.getPosition().x, bob.getPosition().y-0.1f));				// bob hiut the bottom of the platform
@@ -302,7 +306,7 @@ public class BobController {
 					bob.getVelocity().x=0;
 					bob.getVelocity().y=0;
 					if(grounded){
-						bob.getVelocity().x=platform.getVelocity().x;
+						bob.getVelocity().x=platform.getVelocity().x-0.05f;
 					//	bob.setPosition(new Vector2(bob.getPosition().x -0.1f, bob.getPosition().y));
 					}else{
 						bob.setPosition(new Vector2(bob.getPosition().x -0.1f, bob.getPosition().y-0.3f));	
@@ -315,7 +319,7 @@ public class BobController {
 					bob.getVelocity().x=0;
 					bob.getVelocity().y=0;					
 					if(grounded){
-						bob.setPosition(new Vector2(bob.getPosition().x +0.1f, bob.getPosition().y));
+						bob.setPosition(new Vector2(bob.getPosition().x +0.05f, bob.getPosition().y));
 	
 					}else{
 						bob.setPosition(new Vector2(bob.getPosition().x +0.1f, bob.getPosition().y-0.1f));
@@ -444,9 +448,10 @@ public class BobController {
 					bob.getVelocity().y = 0;
 				}if(block.getType().equals(BlockType.METAL)){
 					bob.getVelocity().y = 0;
-				grounded = true;
-				doubleJump=false;		
-				bob.addPastPos();
+					if(bob.getPosition().y > block.getPosition().y){		
+						grounded = true;
+						doubleJump=false;		
+					}
 				}
 			}
 		}
